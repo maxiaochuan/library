@@ -2,6 +2,9 @@ const { eslint } = require('@mxcins/bedrock');
 
 module.exports = {
   ...eslint,
+  parserOptions: {
+    project: './tsconfig.json',
+  },
   rules: {
     ...eslint.rules,
     'global-require': 0,

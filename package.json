@@ -38,14 +38,20 @@
       "pretty-quick --staged"
     ]
   },
-  "dependencies": {},
+  "dependencies": {
+    "signale": "1.4.0",
+    "yargs-parser": "18.1.2"
+  },
   "devDependencies": {
+    "@mxcins/bedrock": "1.1.0",
+    "@types/node": "13.9.5",
+    "@types/signale": "1.4.0",
     "husky": "4.2.3",
     "lint-staged": "10.0.8",
     "np": "6.2.0",
     "prettier": "1.19.1",
     "pretty-quick": "2.0.1",
-    "typescript": "3.8.2"
+    "typescript": "3.8.3"
   },
   "publishConfig": {
     "access": "public"

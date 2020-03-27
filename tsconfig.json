@@ -12,7 +12,5 @@
     "moduleResolution": "node",
     "skipLibCheck": true
   },
-  "exclude": [
-    "lib"
-  ]
+  "exclude": ["lib"]
 }
