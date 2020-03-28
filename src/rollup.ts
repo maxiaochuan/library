@@ -10,7 +10,7 @@ import typescript from '@rollup/plugin-typescript';
 const debug = Debug('mlib:rollup');
 
 export default async (opts: Record<string, any>) => {
-  debug('opts: \n %O', opts);
+  debug('input opts:\n%O', opts);
 
   const inputOptions: InputOptions = {
     input: './src/index.ts',
@@ -37,13 +37,13 @@ export default async (opts: Record<string, any>) => {
     if (opts.dev) {
       const watcher = watch({ ...inputOptions, output: outputOptions });
       watcher.on('event', evt => {
-        // eslint-disable-next-line no-console
-        console.log('evt', evt);
+        debug('on watch event:\n%O', evt);
       });
 
       process.on('exit', () => watcher.close());
     }
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.log('error', error);
   }
 };
