@@ -10,6 +10,8 @@ import typescript from 'rollup-plugin-typescript2';
 
 const debug = Debug('mlib:rollup');
 
+const OUTPUT_DIR = './dist';
+
 export default async (opts: Record<string, any>) => {
   debug('input opts:\n%O', opts);
 
@@ -22,7 +24,7 @@ export default async (opts: Record<string, any>) => {
       typescript({
         tsconfigDefaults: {
           compilerOptions: {
-            declarationDir: './dist',
+            declarationDir: OUTPUT_DIR,
             declaration: true,
           },
         },
@@ -31,7 +33,7 @@ export default async (opts: Record<string, any>) => {
   };
 
   const outputOptions: OutputOptions = {
-    file: './dist/bundle.js',
+    file: `${OUTPUT_DIR}/bundle.js`,
   };
 
   try {
