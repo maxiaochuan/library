@@ -17,6 +17,17 @@ if (args.version) {
 const cwd = process.cwd();
 
 switch (args._[0]) {
+  case 'rollup':
+    require('../lib/rollup').default({
+      cwd,
+    });
+    break;
+  case 'rollup:dev':
+    require('../lib/rollup').default({
+      cwd,
+      dev: true,
+    });
+    break;
   case 'build':
     require('../lib/build').default({
       cwd,
