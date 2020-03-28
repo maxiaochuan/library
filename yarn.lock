@@ -200,10 +200,10 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
-"@mxcins/bedrock@1.2.4":
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/@mxcins/bedrock/-/bedrock-1.2.4.tgz#82e0888c49f5c20f23c7c99386e4353b80161da9"
-  integrity sha512-lCgeALDm/W56LpwmI5fXb30e6AxIDCWTn5RlNzybDYGraQEcz6Pb4EnGVRUidX+w/tsFYIy3dTXysPtDz7EkIg==
+"@mxcins/bedrock@1.2.5":
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/@mxcins/bedrock/-/bedrock-1.2.5.tgz#10b733d2a0d784c7a5aa5ac5d52593ce88fb34e7"
+  integrity sha512-jUliuAL3EXa7skdovX83iodE6nStIMwCQzDRKrtBy8RpbOJoD4uP/1km7lqA6hRs87TG2w+ZSbZRKTgylSjIEQ==
   dependencies:
     "@typescript-eslint/eslint-plugin" "2.25.0"
     "@typescript-eslint/parser" "2.25.0"
@@ -4354,7 +4354,7 @@ rimraf@^2.6.3:
   dependencies:
     glob "^7.1.3"
 
-rollup-plugin-typescript2@^0.27.0:
+rollup-plugin-typescript2@0.27.0:
   version "0.27.0"
   resolved "https://registry.yarnpkg.com/rollup-plugin-typescript2/-/rollup-plugin-typescript2-0.27.0.tgz#95ff96f9e07d5000a9d2df4d76b548f9a1f83511"
   integrity sha512-SRKG/Canve3cxBsqhY1apIBznqnX9X/WU3Lrq3XSwmTmFqccj3+//logLXFEmp+PYFNllSVng+f4zjqRTPKNkA==
@@ -5030,6 +5030,11 @@ table@^5.0.0, table@^5.2.3, table@^5.4.6:
     lodash "^4.17.14"
     slice-ansi "^2.1.0"
     string-width "^3.0.0"
+
+temp-dir@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/temp-dir/-/temp-dir-2.0.0.tgz#bde92b05bdfeb1516e804c9c00ad45177f31321e"
+  integrity sha512-aoBAniQmmwtcKp/7BzsH8Cxzv8OL736p7v1ihGb5e9DJ9kTwGWHrQrVB5+lfVDzfGrdRzXch+ig7LHaY1JTOrg==
 
 term-size@^2.1.0:
   version "2.2.0"
