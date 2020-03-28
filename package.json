@@ -40,9 +40,9 @@
   },
   "dependencies": {
     "@rollup/plugin-node-resolve": "7.1.1",
-    "@rollup/plugin-typescript": "4.0.0",
     "debug": "4.1.1",
     "rollup": "2.2.0",
+    "rollup-plugin-typescript2": "^0.27.0",
     "signale": "1.4.0",
     "yargs-parser": "18.1.2"
   },

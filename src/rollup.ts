@@ -1,3 +1,4 @@
+// import { join } from 'path';
 import Debug from 'debug';
 import { rollup, watch, InputOptions, OutputOptions } from 'rollup';
 
@@ -5,7 +6,7 @@ import { rollup, watch, InputOptions, OutputOptions } from 'rollup';
 // 2020-03-28 15:56:39 UNRESOLVED_IMPORT
 import nodeResolve from '@rollup/plugin-node-resolve';
 // 2020-03-28 16:07:28 for typescript
-import typescript from '@rollup/plugin-typescript';
+import typescript from 'rollup-plugin-typescript2';
 
 const debug = Debug('mlib:rollup');
 
@@ -18,15 +19,19 @@ export default async (opts: Record<string, any>) => {
       nodeResolve({
         preferBuiltins: true, // https://github.com/rollup/plugins/tree/master/packages/node-resolve/#preferbuiltins
       }),
-      typescript(),
-      // alias({
-      //   resolve: ['.js', '.jsx', '.ts', '.tsx'],
-      // }),
+      typescript({
+        tsconfigDefaults: {
+          compilerOptions: {
+            declarationDir: './dist',
+            declaration: true,
+          },
+        },
+      }),
     ],
   };
 
   const outputOptions: OutputOptions = {
-    file: 'bundle.js',
+    file: './dist/bundle.js',
   };
 
   try {
