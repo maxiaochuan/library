@@ -4,16 +4,19 @@ import Debug from 'debug';
 import { basename, extname, join } from 'path';
 import { rollup, watch, InputOptions, OutputOptions, ModuleFormat } from 'rollup';
 import TEMP_DIR from 'temp-dir';
+import { IOpts as IbabelPresetMxcinsOpts } from 'babel-preset-mxcins';
 
 // plugins
 // 2020-03-28 15:56:39 UNRESOLVED_IMPORT
 import nodeResolve from '@rollup/plugin-node-resolve';
 // 2020-03-28 16:07:28 for typescript
 import typescript from 'rollup-plugin-typescript2';
+// 2020-03-29 23:03:18 for babel
+import babel from 'rollup-plugin-babel';
 
 import { IPackageJSON } from './types';
-import { DEFAULT_ROLLUP_ENTRY_FILES, OUTPUT_DIR } from './const';
-import { getEntryPath } from './utils';
+import { DEFAULT_ROLLUP_ENTRY_FILES, OUTPUT_DIR, EXTENSIONS } from './const';
+import { getEntryPath, getExistPath } from './utils';
 
 // for auto external
 import external from './plugins/external';
@@ -28,6 +31,7 @@ export interface IRollupOpts {
   name?: string;
   exports?: 'default' | 'named' | 'none' | 'auto';
   runtime?: boolean;
+  target?: 'browser' | 'node';
   pkg: IPackageJSON;
 }
 
@@ -48,12 +52,24 @@ export default async (opts: IRollupOpts) => {
 
   const name = opts.name || basename(input, extname(input));
 
-  // TODO babel
-  // const runtime = opts.format === 'cjs' ? false : opts.runtime;
+  const runtimeHelpers = opts.format === 'cjs' ? false : opts.runtime;
+
+  const isTs = !!getExistPath(opts.cwd, ['tsconfig.json']);
+
+  const target = opts.target === 'node' ? 'node' : 'browser';
+
+  const presetOptions: IbabelPresetMxcinsOpts = {
+    debug: false,
+    env: {},
+    react: target === 'browser' && {},
+    typescript: isTs && {},
+    transformRuntime: false,
+  };
 
   const inputOptions: InputOptions = {
     input,
     plugins: [
+      external({ pkg: opts.pkg }),
       nodeResolve({
         preferBuiltins: true, // https://github.com/rollup/plugins/tree/master/packages/node-resolve/#preferbuiltins
       }),
@@ -68,7 +84,13 @@ export default async (opts: IRollupOpts) => {
           },
         },
       }),
-      external({ pkg: opts.pkg }),
+      babel({
+        presets: [[require.resolve('babel-preset-mxcins'), presetOptions]],
+        runtimeHelpers,
+        exclude: /\/node_modules\//,
+        babelrc: false,
+        extensions: EXTENSIONS,
+      }),
     ],
   };
 
