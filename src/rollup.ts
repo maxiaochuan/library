@@ -33,7 +33,11 @@ export interface IRollupOpts {
 
 export default async (opts: IRollupOpts) => {
   debug('input opts:\n%O', opts);
-  const signale = new Signale().scope('MLIB', 'ROLLUP', opts.pkg.name || '');
+  const signale = new Signale().scope(
+    (opts.pkg.name || '').toUpperCase(),
+    'ROLLUP',
+    opts.format.toUpperCase(),
+  );
 
   // 获取rollup的 input 暂时只支持单文件
   const input = opts.entry || getEntryPath(opts.cwd, DEFAULT_ROLLUP_ENTRY_FILES);
