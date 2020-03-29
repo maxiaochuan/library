@@ -12,21 +12,17 @@ import nodeResolve from '@rollup/plugin-node-resolve';
 import typescript from 'rollup-plugin-typescript2';
 
 import { IPackageJSON } from './types';
-import { DEFAULT_ROLLUP_ENTRY_FILES } from './const';
+import { DEFAULT_ROLLUP_ENTRY_FILES, OUTPUT_DIR } from './const';
 import { getEntryPath } from './utils';
 
 const debug = Debug('mlib:rollup');
 
-const OUTPUT_DIR = 'dist';
-
-const signale = new Signale().scope('MLIB', 'ROLLUP');
-
 export interface IRollupOpts {
   cwd: string;
+  format: ModuleFormat;
   dev?: boolean;
   entry?: string;
   name?: string;
-  format: ModuleFormat;
   exports?: 'default' | 'named' | 'none' | 'auto';
   runtime?: boolean;
   pkg: IPackageJSON;
@@ -34,6 +30,7 @@ export interface IRollupOpts {
 
 export default async (opts: IRollupOpts) => {
   debug('input opts:\n%O', opts);
+  const signale = new Signale().scope('MLIB', 'ROLLUP', opts.pkg.name || '');
 
   // 获取rollup的 input 暂时只支持单文件
   const input = opts.entry || getEntryPath(opts.cwd, DEFAULT_ROLLUP_ENTRY_FILES);
