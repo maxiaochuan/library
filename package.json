@@ -40,7 +40,7 @@
   "dependencies": {
     "@babel/register": "7.9.0",
     "@rollup/plugin-node-resolve": "7.1.1",
-    "babel-preset-mxcins": "0.0.1-alpha.0",
+    "babel-preset-mxcins": "0.0.1-alpha.1",
     "builtins": "3.0.1",
     "debug": "4.1.1",
     "rimraf": "3.0.2",
