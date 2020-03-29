@@ -15,6 +15,9 @@ import { IPackageJSON } from './types';
 import { DEFAULT_ROLLUP_ENTRY_FILES, OUTPUT_DIR } from './const';
 import { getEntryPath } from './utils';
 
+// for auto external
+import external from './plugins/external';
+
 const debug = Debug('mlib:rollup');
 
 export interface IRollupOpts {
@@ -61,6 +64,7 @@ export default async (opts: IRollupOpts) => {
           },
         },
       }),
+      external({ pkg: opts.pkg }),
     ],
   };
 
