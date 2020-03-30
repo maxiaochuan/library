@@ -5,25 +5,37 @@ export interface IPackageJSON {
   devDependencies?: Record<string, string>;
 }
 
+export type IOutputExports = 'default' | 'named' | 'none' | 'auto';
+
 export interface IConfig {
   esm?: boolean;
   cjs?: boolean;
   // umd?: IUMD;
 
-  // runtimeHelpers?: boolean;
+  runtime?: boolean;
 
-  // target?: 'browser' | 'node';
+  target?: 'browser' | 'node';
   // for rollup
   entry?: string;
-  outputExports?: 'default' | 'named' | 'none' | 'auto';
+  outputExports?: IOutputExports;
   // alias?: Record<string, string>;
   // dev?: BundleType;
   // doc?: any;
 }
 
+export interface IESM {
+  name?: string;
+}
+export interface ICJS {
+  name?: string;
+}
+
 export interface IBundleOpts {
-  esm?: {};
-  cjs?: {};
+  entry?: string;
+  esm?: IESM;
+  cjs?: ICJS;
+  runtime: boolean;
+  outputExports: IOutputExports;
 }
 
 export interface IBuildOpts {

@@ -25,14 +25,15 @@ const debug = Debug('mlib:rollup');
 
 export interface IRollupOpts {
   cwd: string;
+  pkg: IPackageJSON;
   format: ModuleFormat;
+
   dev?: boolean;
   entry?: string;
   name?: string;
   exports?: 'default' | 'named' | 'none' | 'auto';
   runtime?: boolean;
   target?: 'browser' | 'node';
-  pkg: IPackageJSON;
 }
 
 export default async (opts: IRollupOpts) => {
@@ -52,7 +53,7 @@ export default async (opts: IRollupOpts) => {
 
   const name = opts.name || basename(input, extname(input));
 
-  const runtimeHelpers = opts.format === 'cjs' ? false : opts.runtime;
+  const runtime = opts.format === 'cjs' ? false : opts.runtime;
 
   const isTs = !!getExistPath(opts.cwd, ['tsconfig.json']);
 
@@ -60,11 +61,13 @@ export default async (opts: IRollupOpts) => {
 
   const presetOptions: IbabelPresetMxcinsOpts = {
     debug: false,
-    env: {},
+    env: { corejs: 3, useBuiltIns: 'entry', modules: false },
     react: target === 'browser' && {},
     typescript: isTs && {},
-    transformRuntime: false,
+    transformRuntime: runtime,
   };
+
+  debug('babel-preset-mxcins options:\n%O', presetOptions);
 
   const inputOptions: InputOptions = {
     input,
@@ -86,7 +89,7 @@ export default async (opts: IRollupOpts) => {
       }),
       babel({
         presets: [[require.resolve('babel-preset-mxcins'), presetOptions]],
-        runtimeHelpers,
+        runtimeHelpers: runtime,
         exclude: /\/node_modules\//,
         babelrc: false,
         extensions: EXTENSIONS,

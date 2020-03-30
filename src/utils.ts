@@ -42,8 +42,16 @@ export const getBundleOpts = (cwd: string) => {
 
   require('@babel/register')({
     presets: [
-      require.resolve('@babel/preset-typescript'),
-      [require.resolve('@babel/preset-env'), { targets: { node: 10 }, modules: 'auto' }],
+      [
+        require.resolve('babel-preset-mxcins'),
+        {
+          debug: false,
+          env: { targets: { node: 10 }, modules: 'auto' },
+          react: false,
+          typescript: true,
+          transformRuntime: false,
+        },
+      ],
     ],
     extensions: EXTENSIONS,
     only: CONFIG_FILES.map(f => join(cwd, f)),
@@ -51,10 +59,10 @@ export const getBundleOpts = (cwd: string) => {
 
   const config: IConfig = d(require(path));
 
-  const opts: IBundleOpts = {};
-
-  debug('user config:\n%O', config);
-  debug('buidle options:\n%O', opts);
+  const opts: IBundleOpts = {
+    runtime: !!config.runtime,
+    outputExports: config.outputExports || 'default',
+  };
 
   if (config.esm) {
     opts.esm = {};
@@ -63,6 +71,9 @@ export const getBundleOpts = (cwd: string) => {
   if (config.cjs) {
     opts.cjs = {};
   }
+
+  debug('user config:\n%O', config);
+  debug('buidle options:\n%O', opts);
 
   return opts;
 };

@@ -21,7 +21,11 @@ export default ({
 }: IExternalOpts) => ({
   name: 'mlib-external',
   options: (opts: any) => {
-    let ids: string[] = [];
+    let ids: string[] = [
+      // TODO: runtime 的引入路径问题 移动到下面
+      // // 2020-03-30 00:29:40 for runtime
+      // '@babel/runtime',
+    ];
 
     if (dependencies && pkg.dependencies) {
       ids = ids.concat(Object.keys(pkg.dependencies));
@@ -39,8 +43,11 @@ export default ({
       ids = ids.concat(getBuiltins(process.version));
     }
 
+    const exps = [/@babel\/runtime/].concat(ids.map(id => new RegExp(`^${id}`)));
+
+    debug('exps:\n%O', exps);
+
     const external = (id: string) => {
-      debug('external: ', id);
       if (typeof opts.external === 'function' && opts.external(id)) {
         return true;
       }
@@ -49,7 +56,11 @@ export default ({
         return true;
       }
 
-      return ids.some(idx => new RegExp(`^${idx}`).test(id));
+      const ret = exps.some(exp => exp.test(id));
+
+      debug('external: ', id, ret);
+
+      return ret;
     };
 
     return { ...opts, external };
