@@ -53,15 +53,15 @@ export default async (opts: IRollupOpts) => {
 
   const name = opts.name || basename(input, extname(input));
 
-  const runtime = opts.format === 'cjs' ? false : opts.runtime;
-
   const isTs = !!getExistPath(opts.cwd, ['tsconfig.json']);
 
-  const target = opts.target === 'node' ? 'node' : 'browser';
+  const runtime = opts.format === 'cjs' ? false : opts.runtime;
+  const target = opts.format === 'cjs' ? 'node' : 'browser';
+  const targets = opts.format === 'cjs' ? { node: 10 } : { ie: 10 };
 
   const babelPresetOptions: IbabelPresetMxcinsOpts = {
     debug: false,
-    env: { corejs: 3, useBuiltIns: 'entry', modules: false },
+    env: { targets, corejs: 3, useBuiltIns: 'entry', modules: false },
     react: target === 'browser' && {},
     typescript: isTs && {},
     transformRuntime: runtime,
