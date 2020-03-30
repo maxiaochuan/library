@@ -59,7 +59,7 @@ export default async (opts: IRollupOpts) => {
 
   const target = opts.target === 'node' ? 'node' : 'browser';
 
-  const presetOptions: IbabelPresetMxcinsOpts = {
+  const babelPresetOptions: IbabelPresetMxcinsOpts = {
     debug: false,
     env: { corejs: 3, useBuiltIns: 'entry', modules: false },
     react: target === 'browser' && {},
@@ -67,7 +67,7 @@ export default async (opts: IRollupOpts) => {
     transformRuntime: runtime,
   };
 
-  debug('babel-preset-mxcins options:\n%O', presetOptions);
+  debug('babel-preset-mxcins options:\n%O', babelPresetOptions);
 
   const inputOptions: InputOptions = {
     input,
@@ -88,7 +88,7 @@ export default async (opts: IRollupOpts) => {
         },
       }),
       babel({
-        presets: [[require.resolve('babel-preset-mxcins'), presetOptions]],
+        presets: [[require.resolve('babel-preset-mxcins'), babelPresetOptions]],
         runtimeHelpers: runtime,
         exclude: /\/node_modules\//,
         babelrc: false,
