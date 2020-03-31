@@ -3,9 +3,9 @@ import rimraf from 'rimraf';
 // import Debug from 'debug';
 
 import { IBuildOpts, IPackageJSON } from './types';
-import { getConfig, isFalse } from './utils';
+import { getConfig, isFalse, overwritePackageJSON } from './utils';
 
-import rollup from './rollup';
+import * as rollup from './rollup';
 import { OUTPUT_DIR } from './const';
 
 export default async ({ cwd }: IBuildOpts) => {
@@ -16,16 +16,22 @@ export default async ({ cwd }: IBuildOpts) => {
     // dir: target dir
     rimraf.sync(join(cwd, OUTPUT_DIR));
 
+    const outputs = [];
+
     if (!isFalse(conf.esm)) {
-      await rollup({ cwd, pkg, format: 'esm', conf });
+      outputs.push(await rollup.build({ cwd, pkg, format: 'esm', conf }));
     }
 
     if (!isFalse(conf.cjs)) {
-      await rollup({ cwd, pkg, format: 'cjs', conf });
+      outputs.push(await rollup.build({ cwd, pkg, format: 'cjs', conf }));
     }
 
     if (conf.umd) {
-      await rollup({ cwd, pkg, format: 'umd', conf });
+      outputs.push(await rollup.build({ cwd, pkg, format: 'umd', conf }));
+    }
+
+    if (!isFalse(conf.overwritePackageJSON)) {
+      overwritePackageJSON(cwd, pkg, outputs);
     }
   } catch (error) {
     // eslint-disable-next-line no-console

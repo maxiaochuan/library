@@ -3,6 +3,11 @@ export interface IPackageJSON {
   dependencies?: Record<string, string>;
   peerDependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
+
+  main?: string;
+  module?: string;
+  unpkg?: string;
+  types?: string;
 }
 
 export type IOutputExports = 'default' | 'named' | 'none' | 'auto';
@@ -30,6 +35,10 @@ export interface IConfig {
   entry?: string;
   outputFileName?: string;
   outputExports?: IOutputExports;
+
+  overwritePackageJSON?: boolean;
+
+  dev?: 'esm' | 'cjs' | 'umd';
 }
 
 export interface IESM {

@@ -4,6 +4,8 @@ export const CONFIG_FILES = ['.mlib.js', '.mlib.ts'];
 
 export const OUTPUT_DIR = 'dist';
 
+export const OUTPUT_TYPES_PATH = `${OUTPUT_DIR}/index.d.ts`;
+
 export const DEFAULT_ROLLUP_ENTRY_FILES = [
   'src/index.ts',
   'src/index.tsx',

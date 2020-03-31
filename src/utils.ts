@@ -1,8 +1,11 @@
-import { existsSync } from 'fs';
+import { existsSync, writeFileSync } from 'fs';
 import { join } from 'path';
+import { Signale } from 'signale';
 import Debug from 'debug';
-import { CONFIG_FILES, EXTENSIONS } from './const';
-import { IConfig } from './types';
+import sort from 'sort-package-json';
+import prettier from 'prettier';
+import { CONFIG_FILES, EXTENSIONS, OUTPUT_TYPES_PATH } from './const';
+import { IConfig, IPackageJSON } from './types';
 
 const debug = Debug('mlib:utils');
 
@@ -11,8 +14,6 @@ export const d = <T>(o: any): T => o.default || o;
 
 export const isFalse = (bool?: unknown): bool is false =>
   (typeof bool === 'boolean' && bool === false) as any;
-// const toObject = <T extends {}>(input: boolean | T | undefined): T =>
-//   (typeof input === 'object' ? input : {}) as T;
 
 export class ConfigError extends Error {
   public name = 'ConfigError';
@@ -72,4 +73,50 @@ export const getConfig = (cwd: string) => {
   debug('config:\n%O', config);
 
   return config;
+};
+
+export const overwritePackageJSON = (
+  cwd: string,
+  pkg: IPackageJSON,
+  outputs: { format: string; file: string }[],
+) => {
+  try {
+    const signale = new Signale().scope((pkg.name || '').toUpperCase(), 'UPDATE_PACKAGE');
+
+    const copy = { ...pkg };
+
+    outputs.forEach(output => {
+      const { format, file } = output;
+
+      if (format === 'esm') {
+        copy.module = file;
+        signale.info(`${format} -> { module: ${file} }`);
+      }
+
+      if (format === 'cjs') {
+        copy.main = file;
+        signale.info(`${format} -> { main: ${file} }`);
+      }
+
+      if (format === 'umd') {
+        copy.unpkg = file;
+        signale.info(`${format} -> { unpkg: ${file} }`);
+      }
+    });
+
+    const typesPath = getExistPath(cwd, [OUTPUT_TYPES_PATH]);
+
+    if (typesPath) {
+      copy.types = OUTPUT_TYPES_PATH;
+    }
+
+    writeFileSync(
+      join(cwd, 'package.json'),
+      prettier.format(JSON.stringify(sort(copy)), { parser: 'json', printWidth: 1 }),
+      { encoding: 'utf8' },
+    );
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+  }
 };

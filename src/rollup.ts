@@ -35,21 +35,13 @@ export interface IRollupOpts {
   dev?: boolean;
 }
 
-export default async (opts: IRollupOpts) => {
-  debug('input opts:\n%O', opts);
-
+const formatOptions = (opts: IRollupOpts) => {
   const { cwd, pkg, format, conf } = opts;
   const params = conf[format];
 
   if (!params) {
     throw new Error(`rollup get params error: ${format}`);
   }
-
-  const signale = new Signale().scope(
-    (pkg.name || '').toUpperCase(),
-    'ROLLUP',
-    format.toUpperCase(),
-  );
 
   // input: 暂时只支持单文件
   const input = conf.entry || getEntryPath(cwd, DEFAULT_ROLLUP_ENTRY_FILES);
@@ -127,29 +119,70 @@ export default async (opts: IRollupOpts) => {
     options.plugins?.push(commonjs({ include: /node_modules/ }));
   }
 
+  return options;
+};
+
+export const build = async (opts: IRollupOpts): Promise<{ format: string; file: string }> => {
+  debug('input opts:\n%O', opts);
+
+  const signale = new Signale().scope(
+    (opts.pkg.name || '').toUpperCase(),
+    'ROLLUP',
+    opts.format.toUpperCase(),
+  );
+
+  const options = formatOptions(opts);
   debug('rollup options:\n%O', options);
 
   try {
-    if (opts.dev) {
-      signale.watch(`rollup watching: [${opts.format}]`);
-      const watcher = watch(options);
-      watcher.on('event', evt => {
-        debug('on watch event:\n%O', evt);
-      });
-      process.on('exit', () => watcher.close());
+    // if (opts.dev) {
+    //   signale.watch(`rollup watching: [${opts.format}]`);
+    //   const watcher = watch(options);
+    //   watcher.on('event', evt => {
+    //     debug('on watch event:\n%O', evt);
+    //   });
+    //   process.on('exit', () => watcher.close());
 
-      return watcher;
-    }
-    signale.start(`rollup <- ${input}`);
+    //   return { format: '', file: '' };
+    // }
+    signale.start(`rollup <- ${options.input}`);
     const bundle = await rollup(options);
     const output = options.output as OutputOptions;
     await bundle.write(output);
     signale.complete(`rollup -> ${output.file}\n\n`);
 
-    return { format: 'esm', output: output.file };
+    return { format: opts.format, file: output.file || '' };
   } catch (error) {
     // eslint-disable-next-line no-console
     console.log('error', error);
-    return error;
+    throw error;
   }
+};
+
+export const dev = async (opts: IRollupOpts) => {
+  debug('input opts:\n%O', opts);
+
+  const signale = new Signale().scope(
+    (opts.pkg.name || '').toUpperCase(),
+    'ROLLUP',
+    opts.format.toUpperCase(),
+  );
+
+  const options = formatOptions(opts);
+  debug('rollup options:\n%O', options);
+
+  signale.watch(`rollup watching: [${opts.format}]`);
+  const watcher = watch(options);
+  watcher.on('event', evt => {
+    if (evt.code === 'BUNDLE_START') {
+      signale.start(`BUNDLE_START`);
+    }
+    if (evt.code === 'BUNDLE_END') {
+      signale.success(`BUNDLE_END: ${evt.duration}ms.`);
+    }
+    debug('on watch event:\n%O', evt);
+  });
+  process.on('exit', () => {
+    watcher.close();
+  });
 };
