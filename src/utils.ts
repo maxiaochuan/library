@@ -61,7 +61,7 @@ export const getBundleOpts = (cwd: string) => {
 
   const opts: IBundleOpts = {
     runtime: !!config.runtime,
-    outputExports: config.outputExports || 'default',
+    outputExports: config.outputExports || 'auto',
   };
 
   if (config.esm) {
@@ -70,6 +70,10 @@ export const getBundleOpts = (cwd: string) => {
 
   if (config.cjs) {
     opts.cjs = {};
+  }
+
+  if (config.umd) {
+    opts.umd = { ...config.umd };
   }
 
   debug('user config:\n%O', config);

@@ -1,6 +1,7 @@
 // import { join } from 'path';
 import { Signale } from 'signale';
 import Debug from 'debug';
+import rimraf from 'rimraf';
 import { basename, extname, join } from 'path';
 import { rollup, watch, InputOptions, OutputOptions, ModuleFormat } from 'rollup';
 import TEMP_DIR from 'temp-dir';
@@ -13,9 +14,11 @@ import nodeResolve from '@rollup/plugin-node-resolve';
 import typescript from 'rollup-plugin-typescript2';
 // 2020-03-29 23:03:18 for babel
 import babel from 'rollup-plugin-babel';
+// 2020-03-30 14:40:05 for umd
+import commonjs from '@rollup/plugin-commonjs';
 
-import { IPackageJSON } from './types';
-import { DEFAULT_ROLLUP_ENTRY_FILES, OUTPUT_DIR, EXTENSIONS } from './const';
+import { IPackageJSON, IBundleOpts, IUMD } from './types';
+import { DEFAULT_ROLLUP_ENTRY_FILES, OUTPUT_DIRS, EXTENSIONS } from './const';
 import { getEntryPath, getExistPath } from './utils';
 
 // for auto external
@@ -23,17 +26,12 @@ import external from './plugins/external';
 
 const debug = Debug('mlib:rollup');
 
-export interface IRollupOpts {
+export interface IRollupOpts extends IBundleOpts {
   cwd: string;
   pkg: IPackageJSON;
   format: ModuleFormat;
 
   dev?: boolean;
-  entry?: string;
-  name?: string;
-  exports?: 'default' | 'named' | 'none' | 'auto';
-  runtime?: boolean;
-  target?: 'browser' | 'node';
 }
 
 export default async (opts: IRollupOpts) => {
@@ -43,6 +41,10 @@ export default async (opts: IRollupOpts) => {
     'ROLLUP',
     opts.format.toUpperCase(),
   );
+
+  // clear target dir
+  const dir = OUTPUT_DIRS[opts.format.toUpperCase()];
+  rimraf.sync(join(opts.cwd, dir));
 
   // 获取rollup的 input 暂时只支持单文件
   const input = opts.entry || getEntryPath(opts.cwd, DEFAULT_ROLLUP_ENTRY_FILES);
@@ -55,7 +57,8 @@ export default async (opts: IRollupOpts) => {
 
   const isTs = !!getExistPath(opts.cwd, ['tsconfig.json']);
 
-  const runtime = opts.format === 'cjs' ? false : opts.runtime;
+  // 2020-03-30 15:40:53 感觉UMD 并不需要runtime 处理
+  const runtime = opts.runtime && opts.format === 'esm';
   const target = opts.format === 'cjs' ? 'node' : 'browser';
   const targets = opts.format === 'cjs' ? { node: 10 } : { ie: 10 };
 
@@ -72,7 +75,6 @@ export default async (opts: IRollupOpts) => {
   const inputOptions: InputOptions = {
     input,
     plugins: [
-      external({ pkg: opts.pkg }),
       nodeResolve({
         preferBuiltins: true, // https://github.com/rollup/plugins/tree/master/packages/node-resolve/#preferbuiltins
       }),
@@ -82,7 +84,7 @@ export default async (opts: IRollupOpts) => {
         tsconfigDefaults: {
           compilerOptions: {
             target: 'esnext',
-            declarationDir: OUTPUT_DIR,
+            declarationDir: OUTPUT_DIRS.declaration,
             declaration: true,
           },
         },
@@ -94,14 +96,21 @@ export default async (opts: IRollupOpts) => {
         babelrc: false,
         extensions: EXTENSIONS,
       }),
+      external({ format: opts.format, pkg: opts.pkg }),
     ],
   };
 
   const outputOptions: OutputOptions = {
-    file: join(OUTPUT_DIR, `${name}.${opts.format}.js`),
+    file: join(dir, `${name}.${opts.format}.js`),
     format: opts.format,
-    exports: opts.exports,
+    exports: opts.format === 'umd' ? 'named' : opts.outputExports,
   };
+
+  if (opts.format === 'umd') {
+    const umd = opts.umd as IUMD;
+    inputOptions.plugins?.push(commonjs({ include: /node_modules/ }));
+    outputOptions.name = umd.outputName;
+  }
 
   try {
     if (opts.dev) {

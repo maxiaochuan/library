@@ -8,19 +8,16 @@ export interface IPackageJSON {
 export type IOutputExports = 'default' | 'named' | 'none' | 'auto';
 
 export interface IConfig {
-  esm?: boolean;
-  cjs?: boolean;
-  // umd?: IUMD;
+  esm?: boolean | IESM;
+  cjs?: boolean | ICJS;
+  umd?: IUMD;
 
   runtime?: boolean;
-
   target?: 'browser' | 'node';
   // for rollup
   entry?: string;
   outputExports?: IOutputExports;
-  // alias?: Record<string, string>;
-  // dev?: BundleType;
-  // doc?: any;
+  name?: string;
 }
 
 export interface IESM {
@@ -29,11 +26,17 @@ export interface IESM {
 export interface ICJS {
   name?: string;
 }
+export interface IUMD {
+  name?: string;
+  outputName: string;
+}
 
 export interface IBundleOpts {
   entry?: string;
+  name?: string;
   esm?: IESM;
   cjs?: ICJS;
+  umd?: IUMD;
   runtime: boolean;
   outputExports: IOutputExports;
 }

@@ -24,3 +24,5 @@
     - rollup 单文件
 
 #### 2020-03-28 15:00:37 rollup
+
+#### 2020-03-31 11:09:55 rollup plugin external 在yarn link 之后 requireresolve 有问题， 待解决
