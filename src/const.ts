@@ -6,7 +6,7 @@ export const OUTPUT_DIRS: Record<string, string> = {
   ESM: 'es',
   CJS: 'lib',
   UMD: 'dist',
-  DECLARATION: 'dist',
+  DECLARATION: 'types',
 };
 
 export const DEFAULT_ROLLUP_ENTRY_FILES = [

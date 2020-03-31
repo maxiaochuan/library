@@ -2,28 +2,26 @@ import { join } from 'path';
 // import Debug from 'debug';
 
 import { IBuildOpts, IPackageJSON } from './types';
-import { getBundleOpts } from './utils';
+import { getConfig, isFalse } from './utils';
 
 import rollup from './rollup';
-
-// const debug = Debug('mlib:build');
 
 export default async ({ cwd }: IBuildOpts) => {
   try {
     const pkg: IPackageJSON = require(join(cwd, 'package.json'));
 
-    const { esm, cjs, umd, ...others } = getBundleOpts(cwd);
+    const conf = getConfig(cwd);
 
-    if (esm) {
-      await rollup({ cwd, pkg, format: 'esm', ...others, esm });
+    if (!isFalse(conf.esm)) {
+      await rollup({ cwd, pkg, format: 'esm', conf });
     }
 
-    if (cjs) {
-      await rollup({ cwd, pkg, format: 'cjs', ...others, cjs });
+    if (!isFalse(conf.cjs)) {
+      await rollup({ cwd, pkg, format: 'cjs', conf });
     }
 
-    if (umd) {
-      await rollup({ cwd, pkg, format: 'umd', ...others, umd });
+    if (conf.umd) {
+      await rollup({ cwd, pkg, format: 'umd', conf });
     }
   } catch (error) {
     // eslint-disable-next-line no-console

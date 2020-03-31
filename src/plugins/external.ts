@@ -6,9 +6,11 @@ import { IPackageJSON } from '../types';
 
 const debug = Debug('mlib:plugins:external');
 
+const cwd = process.cwd();
+
 const safe = (id: string) => {
   try {
-    return require.resolve(id);
+    return require.resolve(id, { paths: [cwd].concat(require.main?.paths || []) });
   } catch (error) {
     debug('safe error:', id);
     return null;

@@ -7,38 +7,40 @@ export interface IPackageJSON {
 
 export type IOutputExports = 'default' | 'named' | 'none' | 'auto';
 
+/**
+ * example:
+ * {
+ *    esm?: false | { },
+ *    cjs?: false | { },
+ *    umd?: { name: '' }
+ *    entry: '',
+ *    runtime: true | false,
+ *    target: 'browser' | 'node',
+ *    outputExports: IOutputExports;
+ * }
+ */
 export interface IConfig {
-  esm?: boolean | IESM;
-  cjs?: boolean | ICJS;
-  umd?: IUMD;
+  esm?: false | IESM;
+  cjs?: false | ICJS;
+  umd?: false | IUMD;
 
   runtime?: boolean;
   target?: 'browser' | 'node';
   // for rollup
   entry?: string;
+  outputFileName?: string;
   outputExports?: IOutputExports;
-  name?: string;
 }
 
 export interface IESM {
-  name?: string;
+  // name?: string;
 }
 export interface ICJS {
-  name?: string;
+  // name?: string;
 }
 export interface IUMD {
-  name?: string;
-  outputName: string;
-}
-
-export interface IBundleOpts {
-  entry?: string;
-  name?: string;
-  esm?: IESM;
-  cjs?: ICJS;
-  umd?: IUMD;
-  runtime: boolean;
-  outputExports: IOutputExports;
+  name: string;
+  globals: Record<string, string>;
 }
 
 export interface IBuildOpts {
