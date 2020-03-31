@@ -1413,10 +1413,10 @@ babel-plugin-dynamic-import-node@^2.3.0:
   dependencies:
     object.assign "^4.1.0"
 
-babel-preset-mxcins@0.0.1-alpha.4:
-  version "0.0.1-alpha.4"
-  resolved "https://registry.yarnpkg.com/babel-preset-mxcins/-/babel-preset-mxcins-0.0.1-alpha.4.tgz#330925e03243349400596eb3523ce63fc93dfcc9"
-  integrity sha512-vIaIgqXHN9Ts4Z8oCVX+0O+L9EX6w5DMOcQIvlRqHd/g8DnTNYYw344+doCfewqGzlYj4BiTnF+DHpelb2OueA==
+babel-preset-mxcins@0.0.1-alpha.5:
+  version "0.0.1-alpha.5"
+  resolved "https://registry.yarnpkg.com/babel-preset-mxcins/-/babel-preset-mxcins-0.0.1-alpha.5.tgz#a904a673880c2a9706f4a2800976ab62c2d9cc6d"
+  integrity sha512-czsdivR3IpzE7rgt4o25CbHEMyElcXQcT/8xS2zy3V66slVNjuu+kkMwHjc+8rBloHG+wAvUW6iOp6GZmbx0Wg==
   dependencies:
     "@babel/core" "7.9.0"
     "@babel/plugin-proposal-class-properties" "7.8.3"
