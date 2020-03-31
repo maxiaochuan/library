@@ -79,10 +79,11 @@ export default async (opts: IRollupOpts) => {
   debug('babel-preset-mxcins options:\n%O', babelPresetOptions);
 
   // 2020-03-31 14:28:33 for declaration
-  const declaration = !process.env.MLIB_DECLARATION_DONE;
-  if (declaration) {
-    process.env.MLIB_DECLARATION_DONE = 'DONE';
-  }
+  const declaration = true;
+  // const declaration = !process.env.MLIB_DECLARATION_DONE;
+  // if (declaration) {
+  //   process.env.MLIB_DECLARATION_DONE = 'DONE';
+  // }
 
   const options: RollupOptions = {
     input,
