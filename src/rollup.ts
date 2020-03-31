@@ -1,7 +1,7 @@
 // import { join } from 'path';
 import { Signale } from 'signale';
 import Debug from 'debug';
-import { basename, extname, join } from 'path';
+import { join } from 'path';
 import { rollup, watch, OutputOptions, RollupOptions } from 'rollup';
 import TEMP_DIR from 'temp-dir';
 import { IOpts as IbabelPresetMxcinsOpts } from 'babel-preset-mxcins';
@@ -36,7 +36,7 @@ export interface IRollupOpts {
 }
 
 const formatOptions = (opts: IRollupOpts) => {
-  const { cwd, pkg, format, conf } = opts;
+  const { cwd, format, conf } = opts;
   const params = conf[format];
 
   if (!params) {
@@ -50,8 +50,9 @@ const formatOptions = (opts: IRollupOpts) => {
     throw new Error('rollup entry file failed');
   }
 
-  const name =
-    conf.outputFileName || (pkg.name || '').split('/').pop() || basename(input, extname(input));
+  // 2020-03-31 16:34:01 思来想去 最后感觉用index最好
+  //  (pkg.name || '').split('/').pop();
+  const name = conf.outputFileName || 'index';
 
   const isTs = !!getExistPath(opts.cwd, ['tsconfig.json']);
 
@@ -135,21 +136,12 @@ export const build = async (opts: IRollupOpts): Promise<{ format: string; file: 
   debug('rollup options:\n%O', options);
 
   try {
-    // if (opts.dev) {
-    //   signale.watch(`rollup watching: [${opts.format}]`);
-    //   const watcher = watch(options);
-    //   watcher.on('event', evt => {
-    //     debug('on watch event:\n%O', evt);
-    //   });
-    //   process.on('exit', () => watcher.close());
-
-    //   return { format: '', file: '' };
-    // }
     signale.start(`rollup <- ${options.input}`);
+    const start = Date.now();
     const bundle = await rollup(options);
     const output = options.output as OutputOptions;
     await bundle.write(output);
-    signale.complete(`rollup -> ${output.file}\n\n`);
+    signale.complete(`rollup -> ${output.file}  ${Date.now() - start}ms.\n\n`);
 
     return { format: opts.format, file: output.file || '' };
   } catch (error) {

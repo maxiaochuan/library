@@ -1,17 +1,18 @@
 import { join } from 'path';
 import rimraf from 'rimraf';
-// import Debug from 'debug';
+import { Signale } from 'signale';
 
+import { readdirSync, existsSync } from 'fs';
 import { IBuildOpts, IPackageJSON } from './types';
 import { getConfig, isFalse, overwritePackageJSON } from './utils';
 
 import * as rollup from './rollup';
 import { OUTPUT_DIR } from './const';
 
-export default async ({ cwd }: IBuildOpts) => {
+export const build = async ({ cwd }: IBuildOpts) => {
+  const pkg: IPackageJSON = require(join(cwd, 'package.json'));
+  const signale = new Signale().scope((pkg.name || '').toUpperCase(), 'BUILD');
   try {
-    const pkg: IPackageJSON = require(join(cwd, 'package.json'));
-
     const conf = getConfig(cwd);
     // dir: target dir
     rimraf.sync(join(cwd, OUTPUT_DIR));
@@ -34,7 +35,43 @@ export default async ({ cwd }: IBuildOpts) => {
       overwritePackageJSON(cwd, pkg, outputs);
     }
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.log(error);
+    if (error.name === 'ConfigError') {
+      signale.error(error.message);
+    } else {
+      // eslint-disable-next-line no-console
+      console.log(error);
+    }
   }
 };
+
+const buildForLerna = async (opts: IBuildOpts) => {
+  console.log('bbuildForLernaild', opts);
+  try {
+    const pkgs = readdirSync(join(opts.cwd, 'packages')).filter(p => !p.startsWith('.'));
+    // eslint-disable-next-line no-restricted-syntax
+    for (const pkg of pkgs) {
+      const pkgPath = join(opts.cwd, 'packages', pkg);
+
+      process.chdir(pkgPath);
+      // eslint-disable-next-line no-await-in-loop
+      await build({
+        ...opts,
+        cwd: pkgPath,
+        // root: cwd,
+      });
+    }
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
+    process.exit(1);
+  }
+};
+
+export default async function (opts: IBuildOpts) {
+  const lerna = existsSync(join(opts.cwd, 'lerna.json'));
+  if (lerna) {
+    await buildForLerna(opts);
+  } else {
+    await build(opts);
+  }
+}

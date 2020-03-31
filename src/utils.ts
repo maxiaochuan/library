@@ -115,6 +115,8 @@ export const overwritePackageJSON = (
       prettier.format(JSON.stringify(sort(copy)), { parser: 'json', printWidth: 1 }),
       { encoding: 'utf8' },
     );
+
+    signale.complete('overwrite package.json done.\n\n');
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error(error);
