@@ -1,7 +1,6 @@
 // import { join } from 'path';
 import { Signale } from 'signale';
 import Debug from 'debug';
-import rimraf from 'rimraf';
 import { basename, extname, join } from 'path';
 import { rollup, watch, OutputOptions, RollupOptions } from 'rollup';
 import TEMP_DIR from 'temp-dir';
@@ -18,7 +17,7 @@ import babel from 'rollup-plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 
 import { IPackageJSON, IConfig, IUMD } from './types';
-import { DEFAULT_ROLLUP_ENTRY_FILES, OUTPUT_DIRS, EXTENSIONS } from './const';
+import { DEFAULT_ROLLUP_ENTRY_FILES, OUTPUT_DIR, EXTENSIONS } from './const';
 import { getEntryPath, getExistPath } from './utils';
 
 // for auto external
@@ -55,15 +54,12 @@ export default async (opts: IRollupOpts) => {
   // input: 暂时只支持单文件
   const input = conf.entry || getEntryPath(cwd, DEFAULT_ROLLUP_ENTRY_FILES);
 
-  // dir: target dir
-  const dir = OUTPUT_DIRS[opts.format.toUpperCase()];
-  rimraf.sync(join(cwd, dir));
-
   if (!input) {
     throw new Error('rollup entry file failed');
   }
 
-  const name = conf.outputFileName || basename(input, extname(input));
+  const name =
+    conf.outputFileName || (pkg.name || '').split('/').pop() || basename(input, extname(input));
 
   const isTs = !!getExistPath(opts.cwd, ['tsconfig.json']);
 
@@ -82,6 +78,12 @@ export default async (opts: IRollupOpts) => {
 
   debug('babel-preset-mxcins options:\n%O', babelPresetOptions);
 
+  // 2020-03-31 14:28:33 for declaration
+  const declaration = !process.env.MLIB_DECLARATION_DONE;
+  if (declaration) {
+    process.env.MLIB_DECLARATION_DONE = 'DONE';
+  }
+
   const options: RollupOptions = {
     input,
     plugins: [
@@ -92,12 +94,10 @@ export default async (opts: IRollupOpts) => {
         clean: true,
         cacheRoot: join(TEMP_DIR, '.rollup_plugin_typescript2_cache'),
         tsconfig: join(opts.cwd, 'tsconfig.json'),
-        useTsconfigDeclarationDir: true,
         tsconfigOverride: {
           compilerOptions: {
             target: 'esnext',
-            declaration: true,
-            declarationDir: OUTPUT_DIRS.DECLARATION,
+            declaration,
           },
         },
       }),
@@ -115,7 +115,7 @@ export default async (opts: IRollupOpts) => {
     ],
 
     output: {
-      file: join(dir, `${name}.${opts.format}.js`),
+      file: join(OUTPUT_DIR, `${name}.${format}.js`),
       format,
       name: format === 'umd' ? (params as IUMD).name : undefined,
       exports: conf.outputExports,
@@ -136,15 +136,19 @@ export default async (opts: IRollupOpts) => {
         debug('on watch event:\n%O', evt);
       });
       process.on('exit', () => watcher.close());
-    } else {
-      signale.start(`rollup <- ${input}`);
-      const bundle = await rollup(options);
-      const output = options.output as OutputOptions;
-      await bundle.write(output);
-      signale.complete(`rollup -> ${output.file}\n\n`);
+
+      return watcher;
     }
+    signale.start(`rollup <- ${input}`);
+    const bundle = await rollup(options);
+    const output = options.output as OutputOptions;
+    await bundle.write(output);
+    signale.complete(`rollup -> ${output.file}\n\n`);
+
+    return { format: 'esm', output: output.file };
   } catch (error) {
     // eslint-disable-next-line no-console
     console.log('error', error);
+    return error;
   }
 };
