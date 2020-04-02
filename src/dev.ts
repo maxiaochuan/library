@@ -6,6 +6,7 @@ import { IBuildOpts, IPackageJSON } from './types';
 import { getConfig } from './utils';
 
 import * as rollup from './rollup';
+import * as storybook from './storybook';
 import { OUTPUT_DIR } from './const';
 
 export default async ({ cwd }: IBuildOpts) => {
@@ -19,5 +20,9 @@ export default async ({ cwd }: IBuildOpts) => {
 
   if (dev === 'esm') {
     rollup.dev({ cwd, pkg, format: 'esm', conf });
+  }
+
+  if (dev === 'story') {
+    storybook.dev({ mode: 'dev' });
   }
 };

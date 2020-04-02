@@ -18,7 +18,8 @@
   "files": [
     "lib",
     "bin",
-    "src/types.d.ts"
+    "src/types.d.ts",
+    "templates"
   ],
   "scripts": {
     "build": "rm -rf lib && tsc",
@@ -39,12 +40,22 @@
   },
   "dependencies": {
     "@babel/register": "7.9.0",
-    "@rollup/plugin-commonjs": "^11.0.2",
+    "@rollup/plugin-commonjs": "11.0.2",
     "@rollup/plugin-node-resolve": "7.1.1",
+    "@storybook/addon-a11y": "6.0.0-alpha.30",
+    "@storybook/addon-backgrounds": "6.0.0-alpha.30",
+    "@storybook/addon-centered": "6.0.0-alpha.30",
+    "@storybook/addon-docs": "6.0.0-alpha.30",
+    "@storybook/addon-knobs": "6.0.0-alpha.30",
+    "@storybook/addon-storysource": "6.0.0-alpha.30",
+    "@storybook/addons": "6.0.0-alpha.30",
+    "@storybook/react": "6.0.0-alpha.30",
+    "babel-loader": "8.1.0",
     "babel-preset-mxcins": "0.0.1-alpha.5",
     "builtins": "3.0.1",
     "debug": "4.1.1",
-    "prettier": "^2.0.2",
+    "prettier": "2.0.2",
+    "react-docgen-typescript-loader": "3.7.2",
     "rimraf": "3.0.2",
     "rollup": "2.2.0",
     "rollup-plugin-babel": "4.4.0",
@@ -52,6 +63,7 @@
     "signale": "1.4.0",
     "sort-package-json": "^1.40.0",
     "temp-dir": "^2.0.0",
+    "ts-loader": "^6.2.2",
     "yargs-parser": "18.1.2"
   },
   "devDependencies": {
