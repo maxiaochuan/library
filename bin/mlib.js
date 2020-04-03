@@ -2,6 +2,7 @@
 const args = require('yargs-parser')(process.argv.slice(2), {
   alias: {
     version: ['v'],
+    scope: ['s'],
   },
 });
 
@@ -25,6 +26,7 @@ switch (args._[0]) {
   case 'dev':
     require('../lib/dev').default({
       cwd,
+      scope: args.scope,
     });
     break;
   default:

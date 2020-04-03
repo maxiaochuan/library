@@ -38,7 +38,7 @@ export interface IConfig {
 
   overwritePackageJSON?: boolean;
 
-  dev?: 'esm' | 'cjs' | 'umd';
+  dev?: 'esm' | 'cjs' | 'umd' | 'docz';
 }
 
 export interface IESM {
@@ -54,4 +54,5 @@ export interface IUMD {
 
 export interface IBuildOpts {
   cwd: string;
+  scope?: string;
 }
