@@ -1,6 +1,6 @@
 export const EXTENSIONS = ['.es6', '.es', '.js', '.jsx', '.mjs', '.ts', '.tsx'];
 
-export const CONFIG_FILES = ['.mlib.js', '.mlib.ts'];
+export const CONFIG_FILES = ['.mlibrc.js', '.mlibrc.ts', '.mrc.js', '.mrc.ts'];
 
 export const OUTPUT_DIR = 'dist';
 
