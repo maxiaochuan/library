@@ -1,23 +1,22 @@
 import Debug from 'debug';
-import { dirname } from 'path';
+import { builtinModules, createRequire } from 'module';
+import { dirname, join } from 'path';
 import { ModuleFormat } from 'rollup';
-import getBuiltins from 'builtins';
 import { IPackageJSON } from '../types';
 
 const debug = Debug('mlib:plugins:external');
 
-const cwd = process.cwd();
-
-const safe = (id: string) => {
+const safe = (rr: NodeRequire, id: string) => {
   try {
-    return require.resolve(id, { paths: [cwd].concat(require.main?.paths || []) });
-  } catch (error) {
+    return rr.resolve(id);
+  } catch (e) {
     debug('safe error:', id);
     return null;
   }
 };
 
 export interface IExternalOpts extends IOptsByFormat {
+  cwd: string;
   format: ModuleFormat;
   pkg: IPackageJSON;
 }
@@ -54,7 +53,7 @@ export const DEFAULT_OPTIONS: Record<string, IOptsByFormat> = {
   },
 };
 
-export default ({ format = 'esm', pkg, ...others }: IExternalOpts) => ({
+export default ({ cwd, format = 'esm', pkg, ...others }: IExternalOpts) => ({
   name: 'mlib-external',
   options: (opts: any) => {
     const { builtins, dependencies, devDependencies, peerDependencies, runtime } = {
@@ -62,11 +61,18 @@ export default ({ format = 'esm', pkg, ...others }: IExternalOpts) => ({
       ...others,
     };
 
+    // 2020-04-03 19:13:04 TODO: 解决link 和 lerna 某些引用问题 感觉不是很好 期待解决办法
+    // 2020-04-03 22:47:00 好像只有文件可以用- -
+    const rr = createRequire(join(cwd, 'package.json'));
+
     debug('external options:\n%O', {
       ...DEFAULT_OPTIONS[format],
       ...others,
     });
     let ids: string[] = [];
+    if (builtins) {
+      ids = ids.concat(builtinModules);
+    }
 
     if (dependencies && pkg.dependencies) {
       ids = ids.concat(Object.keys(pkg.dependencies));
@@ -80,17 +86,11 @@ export default ({ format = 'esm', pkg, ...others }: IExternalOpts) => ({
       ids = ids.concat(Object.keys(pkg.peerDependencies));
     }
 
-    if (builtins) {
-      ids = ids.concat(getBuiltins(process.version));
-    }
-
     if (runtime) {
       ids = ids.concat(['@babel/runtime-corejs3/package.json', '@babel/runtime/package.json']);
     }
 
-    ids = ids.map(safe).filter(Boolean) as string[];
-
-    debug('ids:\n%O', ids);
+    ids = ids.map(id => safe(rr, id)).filter(Boolean) as string[];
 
     const external = (id: string) => {
       if (typeof opts.external === 'function' && opts.external(id)) {
@@ -101,7 +101,7 @@ export default ({ format = 'esm', pkg, ...others }: IExternalOpts) => ({
         return true;
       }
 
-      const resolved = safe(id);
+      const resolved = safe(rr, id);
 
       if (!resolved) {
         return false;
@@ -112,7 +112,7 @@ export default ({ format = 'esm', pkg, ...others }: IExternalOpts) => ({
       // const ret = exps.some(exp => exp.test(id));
       const ret = ids.some(idx => resolvedDirname.startsWith(dirname(idx)));
 
-      debug('external: ', id, resolvedDirname, ret);
+      debug('external: %s\n  id: %s\ndir: %s', ret, id, resolvedDirname);
 
       return ret;
     };

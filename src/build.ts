@@ -45,7 +45,6 @@ export const build = async ({ cwd }: IBuildOpts) => {
 };
 
 const buildForLerna = async (opts: IBuildOpts) => {
-  console.log('bbuildForLernaild', opts);
   try {
     const pkgs = readdirSync(join(opts.cwd, 'packages')).filter(p => !p.startsWith('.'));
     // eslint-disable-next-line no-restricted-syntax

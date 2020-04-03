@@ -1,15 +1,14 @@
 import { fork } from 'child_process';
 import { join } from 'path';
 import mkdirp from 'mkdirp';
+import rimraf from 'rimraf';
 import { writeFileSync } from 'fs';
 
 export const dev = async ({ cwd }: { cwd: string }) => {
-  console.log('props cwd', cwd);
   process.chdir(cwd);
   const dir = join(cwd, '.docz');
+  rimraf.sync(dir);
   mkdirp.sync(dir);
-
-  console.log('321');
 
   const doczrc = `export default ${JSON.stringify({ typescript: true }, null, 2)}`;
 

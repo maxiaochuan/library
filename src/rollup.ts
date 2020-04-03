@@ -15,6 +15,9 @@ import typescript from 'rollup-plugin-typescript2';
 import babel from 'rollup-plugin-babel';
 // 2020-03-30 14:40:05 for umd
 import commonjs from '@rollup/plugin-commonjs';
+// 2020-04-03 17:18:33 for css
+import postcss from 'rollup-plugin-postcss';
+import autoprefixer from 'autoprefixer';
 
 import { IPackageJSON, IConfig, IUMD } from './types';
 import { DEFAULT_ROLLUP_ENTRY_FILES, OUTPUT_DIR, EXTENSIONS } from './const';
@@ -102,8 +105,23 @@ const formatOptions = (opts: IRollupOpts) => {
         babelrc: false,
         extensions: EXTENSIONS,
       }),
-      external({ format: opts.format, pkg: opts.pkg }),
-
+      external({
+        cwd: opts.cwd,
+        format: opts.format,
+        pkg: opts.pkg,
+      }),
+      postcss({
+        extract: true,
+        use: [
+          [
+            'less',
+            {
+              javascriptEnabled: true,
+            },
+          ],
+        ],
+        plugins: [autoprefixer],
+      }),
       // UMD
       format === 'umd' && commonjs({ include: /node_modules/ }),
     ],
