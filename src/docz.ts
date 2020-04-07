@@ -4,20 +4,26 @@ import mkdirp from 'mkdirp';
 import rimraf from 'rimraf';
 import { writeFileSync } from 'fs';
 
+const gatsby = `
+exports.onCreateBabelConfig = ({ actions }) => {
+  actions.setBabelPlugin({ name:  require.resolve('babel-plugin-import'),
+    options: { libraryName: 'antd', style: 'css' },
+  })
+}
+`;
+
 export const dev = async ({ cwd }: { cwd: string }) => {
   process.chdir(cwd);
   const dir = join(cwd, '.docz');
   rimraf.sync(dir);
   mkdirp.sync(dir);
 
-  const doczrc = `export default ${JSON.stringify({ typescript: true }, null, 2)}`;
-
-  writeFileSync(join(dir, 'doczrc.js'), doczrc, 'utf-8');
+  writeFileSync(join(dir, 'gatsby-node.custom.js'), gatsby, 'utf-8');
 
   return new Promise((resolve, reject) => {
     const bin = require.resolve('docz/bin/index.js');
 
-    const child = fork(bin, ['dev']);
+    const child = fork(bin, ['dev', '--typescript']);
 
     if (child.stdout) {
       child.stdout.on('data', data => {
