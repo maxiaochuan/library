@@ -126,16 +126,22 @@ const formatOptions = (opts: IRollupOpts) => {
       format === 'umd' && commonjs({ include: /node_modules/ }),
     ],
 
+    onwarn(warning: any) {
+      console.log(warning);
+    },
+
     output: {
       file: join(OUTPUT_DIR, `${name}.${format}.js`),
       format,
-      name: format === 'umd' ? (params as IUMD).name : undefined,
       exports: conf.outputExports,
     },
   };
 
   if (format === 'umd') {
     options.plugins?.push(commonjs({ include: /node_modules/ }));
+    const umd = params as IUMD;
+    options.external = [...Object.keys(umd.globals || {})];
+    options.output = { ...options.output, name: umd.name, globals: umd.globals };
   }
 
   return options;

@@ -49,7 +49,7 @@ export interface ICJS {
 }
 export interface IUMD {
   name: string;
-  globals: Record<string, string>;
+  globals?: Record<string, string>;
 }
 
 export interface IBuildOpts {

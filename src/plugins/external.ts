@@ -47,7 +47,7 @@ export const DEFAULT_OPTIONS: Record<string, IOptsByFormat> = {
   umd: {
     builtins: true,
     dependencies: false,
-    devDependencies: false,
+    devDependencies: true,
     peerDependencies: true,
     runtime: false,
   },
