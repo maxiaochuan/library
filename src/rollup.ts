@@ -101,6 +101,7 @@ const formatOptions = (opts: IRollupOpts) => {
       }),
       babel({
         presets: [[require.resolve('babel-preset-mxcins'), babelPresetOptions]],
+        plugins: conf.extraBabelPlugins || [],
         runtimeHelpers: runtime,
         exclude: /\/node_modules\//,
         babelrc: false,

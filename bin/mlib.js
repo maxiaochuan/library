@@ -19,11 +19,13 @@ const cwd = process.cwd();
 
 switch (args._[0]) {
   case 'build':
+    process.env.NODE_ENV = 'production';
     require('../lib/build').default({
       cwd,
     });
     break;
   case 'dev':
+    process.env.NODE_ENV = 'development';
     require('../lib/dev').default({
       cwd,
       scope: args.scope,
