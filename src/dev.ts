@@ -33,7 +33,7 @@ export const dev = async ({ cwd }: IBuildOpts) => {
     }
 
     if (mode === 'docz') {
-      return docz.dev({ cwd });
+      return docz.dev({ cwd, conf });
     }
   } catch (error) {
     // eslint-disable-next-line no-console

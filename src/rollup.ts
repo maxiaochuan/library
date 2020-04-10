@@ -83,6 +83,7 @@ const formatOptions = (opts: IRollupOpts) => {
 
   const options: RollupOptions = {
     input,
+    external: conf.external,
     plugins: [
       nodeResolve({
         preferBuiltins: true, // https://github.com/rollup/plugins/tree/master/packages/node-resolve/#preferbuiltins

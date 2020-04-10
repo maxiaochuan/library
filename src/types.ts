@@ -39,6 +39,9 @@ export interface IConfig {
   overwritePackageJSON?: boolean;
 
   dev?: 'esm' | 'cjs' | 'umd' | 'docz';
+
+  external?: string[];
+  extraBabelPlugins?: string[];
 }
 
 export interface IESM {

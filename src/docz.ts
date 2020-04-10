@@ -3,22 +3,30 @@ import { join } from 'path';
 import mkdirp from 'mkdirp';
 import rimraf from 'rimraf';
 import { writeFileSync } from 'fs';
+import { IConfig } from './types';
 
-const gatsby = `
+const createGatsbyCustomConfig = (plugins: string[] = []) => `
 exports.onCreateBabelConfig = ({ actions }) => {
   actions.setBabelPlugin({ name:  require.resolve('babel-plugin-import'),
     options: { libraryName: 'antd', style: 'css' },
   })
+  ${plugins.map(
+    name => `
+    actions.setBabelPlugin({ name: '${name}' });
+  `,
+  )}
+ 
 }
 `;
 
-export const dev = async ({ cwd }: { cwd: string }) => {
+export const dev = async ({ cwd, conf }: { cwd: string; conf: IConfig }) => {
   process.chdir(cwd);
   const dir = join(cwd, '.docz');
   rimraf.sync(dir);
   mkdirp.sync(dir);
 
-  writeFileSync(join(dir, 'gatsby-node.custom.js'), gatsby, 'utf-8');
+  const custom = createGatsbyCustomConfig(conf.extraBabelPlugins);
+  writeFileSync(join(dir, 'gatsby-node.custom.js'), custom, 'utf-8');
 
   return new Promise((resolve, reject) => {
     const bin = require.resolve('docz/bin/index.js');
