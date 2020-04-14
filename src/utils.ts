@@ -104,6 +104,11 @@ export const overwritePackageJSON = (
       }
     });
 
+    if (!copy.main) {
+      copy.main = copy.module;
+      signale.info(`overwrite -> { main: ${copy.main} }`);
+    }
+
     const typesPath = getExistPath(cwd, [OUTPUT_TYPES_PATH]);
 
     if (typesPath) {

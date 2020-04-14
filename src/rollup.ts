@@ -1,16 +1,12 @@
-// import { join } from 'path';
 import { Signale } from 'signale';
 import Debug from 'debug';
 import { join } from 'path';
 import { rollup, watch, OutputOptions, RollupOptions } from 'rollup';
-import TEMP_DIR from 'temp-dir';
 import { IOpts as IbabelPresetMxcinsOpts } from 'babel-preset-mxcins';
 
 // plugins
 // 2020-03-28 15:56:39 UNRESOLVED_IMPORT
 import nodeResolve from '@rollup/plugin-node-resolve';
-// 2020-03-28 16:07:28 for typescript
-import typescript from 'rollup-plugin-typescript2';
 // 2020-03-29 23:03:18 for babel
 import babel from 'rollup-plugin-babel';
 // 2020-03-30 14:40:05 for umd
@@ -74,37 +70,28 @@ const formatOptions = (opts: IRollupOpts) => {
 
   debug('babel-preset-mxcins options:\n%O', babelPresetOptions);
 
-  // 2020-03-31 14:28:33 for declaration
-  const declaration = true;
-  // const declaration = !process.env.MLIB_DECLARATION_DONE;
-  // if (declaration) {
-  //   process.env.MLIB_DECLARATION_DONE = 'DONE';
-  // }
+  // // 2020-03-31 14:28:33 for declaration
+  // const declaration = true;
+  // // const declaration = !process.env.MLIB_DECLARATION_DONE;
+  // // if (declaration) {
+  // //   process.env.MLIB_DECLARATION_DONE = 'DONE';
+  // // }
 
   const options: RollupOptions = {
     input,
     external: conf.external,
     plugins: [
-      nodeResolve({
-        preferBuiltins: true, // https://github.com/rollup/plugins/tree/master/packages/node-resolve/#preferbuiltins
-      }),
-      typescript({
-        clean: true,
-        cacheRoot: join(TEMP_DIR, '.rollup_plugin_typescript2_cache'),
-        tsconfig: join(opts.cwd, 'tsconfig.json'),
-        tsconfigOverride: {
-          compilerOptions: {
-            target: 'esnext',
-            declaration,
-          },
-        },
-      }),
+      // 2020-04-14 13:56:38 去掉typescript的转换 其实需要的是declaration文件而不是转换
       babel({
         presets: [[require.resolve('babel-preset-mxcins'), babelPresetOptions]],
         plugins: conf.extraBabelPlugins || [],
         runtimeHelpers: runtime,
         exclude: /\/node_modules\//,
         babelrc: false,
+        extensions: EXTENSIONS,
+      }),
+      nodeResolve({
+        preferBuiltins: true, // https://github.com/rollup/plugins/tree/master/packages/node-resolve/#preferbuiltins
         extensions: EXTENSIONS,
       }),
       external({
@@ -129,7 +116,13 @@ const formatOptions = (opts: IRollupOpts) => {
     ],
 
     onwarn(warning: any) {
-      console.log(warning);
+      if (warning.code === 'UNUSED_EXTERNAL_IMPORT') {
+        return;
+      }
+      if (warning.code === 'NON_EXISTENT_EXPORT') {
+        return;
+      }
+      console.warn(warning);
     },
 
     output: {

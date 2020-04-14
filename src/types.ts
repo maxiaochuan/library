@@ -40,7 +40,7 @@ export interface IConfig {
 
   dev?: 'esm' | 'cjs' | 'umd' | 'docz';
 
-  external?: string[];
+  external?: string[] | ((id: string) => boolean);
   extraBabelPlugins?: string[];
 }
 

@@ -7,6 +7,7 @@ import { IBuildOpts, IPackageJSON } from './types';
 import { getConfig, isFalse, overwritePackageJSON } from './utils';
 
 import * as rollup from './rollup';
+import declaration from './declaration';
 import { OUTPUT_DIR } from './const';
 
 export const build = async ({ cwd }: IBuildOpts) => {
@@ -33,6 +34,12 @@ export const build = async ({ cwd }: IBuildOpts) => {
 
     if (!isFalse(conf.overwritePackageJSON)) {
       overwritePackageJSON(cwd, pkg, outputs);
+    }
+
+    const isTs = existsSync(join(cwd, 'tsconfig.json'));
+
+    if (isTs) {
+      await declaration({ pkg });
     }
   } catch (error) {
     if (error.name === 'ConfigError') {

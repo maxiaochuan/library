@@ -9,6 +9,7 @@ import { getConfig } from './utils';
 
 import * as rollup from './rollup';
 import * as docz from './docz';
+import declaration from './declaration';
 
 export const dev = async ({ cwd }: IBuildOpts) => {
   // TODO
@@ -20,6 +21,10 @@ export const dev = async ({ cwd }: IBuildOpts) => {
   rimraf.sync(join(cwd, OUTPUT_DIR));
 
   try {
+    const isTs = existsSync(join(cwd, 'tsconfig.json'));
+    if (isTs) {
+      await declaration({ pkg });
+    }
     if (mode === 'esm') {
       return rollup.dev({ cwd, pkg, format: 'esm', conf });
     }
