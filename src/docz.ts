@@ -1,31 +1,34 @@
 import { fork } from 'child_process';
 import { join } from 'path';
 import mkdirp from 'mkdirp';
-import rimraf from 'rimraf';
+// import rimraf from 'rimraf';
 import { writeFileSync } from 'fs';
 import { IConfig } from './types';
 
 const createGatsbyCustomConfig = (plugins: string[] = []) => `
 exports.onCreateBabelConfig = ({ actions }) => {
-  actions.setBabelPlugin({ name:  require.resolve('babel-plugin-import'),
-    options: { libraryName: 'antd', style: 'css' },
-  })
-  ${plugins.map(
-    name => `
-    actions.setBabelPlugin({ name: '${name}' });
-  `,
-  )}
- 
+  ${plugins
+    .map(name => {
+      if (typeof name === 'string') {
+        return `actions.setBabelPlugin({ name: '${name}' });`;
+      }
+
+      return `actions.setBabelPlugin({ name: '${name[0]}', options: ${JSON.stringify(name[1])}});`;
+    })
+    .join('\n')}
 }
 `;
 
 export const dev = async ({ cwd, conf }: { cwd: string; conf: IConfig }) => {
   process.chdir(cwd);
   const dir = join(cwd, '.docz');
-  rimraf.sync(dir);
+  // rimraf.sync(dir);
   mkdirp.sync(dir);
 
   const custom = createGatsbyCustomConfig(conf.extraBabelPlugins);
+
+  console.log(custom);
+
   writeFileSync(join(dir, 'gatsby-node.custom.js'), custom, 'utf-8');
 
   return new Promise((resolve, reject) => {

@@ -22,7 +22,7 @@ export const dev = async ({ cwd }: IBuildOpts) => {
 
   try {
     const isTs = existsSync(join(cwd, 'tsconfig.json'));
-    if (isTs) {
+    if (mode !== 'docz' && isTs) {
       await declaration({ pkg });
     }
     if (mode === 'esm') {
