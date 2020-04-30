@@ -56,26 +56,20 @@ const formatOptions = (opts: IRollupOpts) => {
   const isTs = !!getExistPath(opts.cwd, ['tsconfig.json']);
 
   // 2020-03-30 15:40:53 感觉UMD 并不需要runtime 处理
-  const runtime = conf.runtime && format === 'esm';
-  const target = format === 'cjs' ? 'node' : 'browser';
+  // const runtime = conf.runtime && format === 'esm';
+  // 2020-04-30 . 还是要得；
+  const { runtime } = conf;
   const targets = format === 'cjs' ? { node: 10 } : { ie: 10 };
 
   const babelPresetOptions: IbabelPresetMxcinsOpts = {
     debug: false,
     env: { targets, corejs: 3, useBuiltIns: 'entry', modules: false },
-    react: target === 'browser' && {},
+    react: {},
     typescript: isTs && {},
     transformRuntime: runtime,
   };
 
   debug('babel-preset-mxcins options:\n%O', babelPresetOptions);
-
-  // // 2020-03-31 14:28:33 for declaration
-  // const declaration = true;
-  // // const declaration = !process.env.MLIB_DECLARATION_DONE;
-  // // if (declaration) {
-  // //   process.env.MLIB_DECLARATION_DONE = 'DONE';
-  // // }
 
   const options: RollupOptions = {
     input,
@@ -135,7 +129,8 @@ const formatOptions = (opts: IRollupOpts) => {
   if (format === 'umd') {
     options.plugins?.push(commonjs({ include: /node_modules/ }));
     const umd = params as IUMD;
-    options.external = [...Object.keys(umd.globals || {})];
+    // 暂时去掉看看效果如何
+    // options.external = [...Object.keys(umd.globals || {})];
     options.output = { ...options.output, name: umd.name, globals: umd.globals };
   }
 
