@@ -122,7 +122,8 @@ const formatOptions = (opts: IRollupOpts) => {
     output: {
       file: join(OUTPUT_DIR, `${name}.${format}.js`),
       format,
-      exports: conf.outputExports,
+      // 2020-04-25 12:47:33 default for named
+      exports: conf.outputExports || 'named',
     },
   };
 
