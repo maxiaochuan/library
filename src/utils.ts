@@ -1,11 +1,9 @@
-import { existsSync, writeFileSync } from 'fs';
+import { PackageJson } from '@mxcins/types';
+import { existsSync, readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
-import { Signale } from 'signale';
 import Debug from 'debug';
-import sort from 'sort-package-json';
-import prettier from 'prettier';
-import { CONFIG_FILES, EXTENSIONS, OUTPUT_TYPES_PATH } from './const';
-import { IConfig, IPackageJSON } from './types';
+import { CONFIG_FILES, EXTENSIONS } from './const';
+import { IConfig } from './types';
 
 const debug = Debug('mlib:utils');
 
@@ -75,55 +73,27 @@ export const getConfig = (cwd: string) => {
   return config;
 };
 
-export const overwritePackageJSON = (
-  cwd: string,
-  pkg: IPackageJSON,
-  outputs: { format: string; file: string }[],
-) => {
+export const getPackage = (path: string): PackageJson => {
+  const dir = path.endsWith('package.json') ? path : join(path, 'package.json');
   try {
-    const signale = new Signale().scope((pkg.name || '').toUpperCase(), 'UPDATE_PACKAGE');
-
-    const copy = { ...pkg };
-
-    outputs.forEach(output => {
-      const { format, file } = output;
-
-      if (format === 'esm') {
-        copy.module = file;
-        signale.info(`${format} -> { module: ${file} }`);
-      }
-
-      if (format === 'cjs') {
-        copy.main = file;
-        signale.info(`${format} -> { main: ${file} }`);
-      }
-
-      if (format === 'umd') {
-        copy.unpkg = file;
-        signale.info(`${format} -> { unpkg: ${file} }`);
-      }
-    });
-
-    if (!copy.main) {
-      copy.main = copy.module;
-      signale.info(`overwrite -> { main: ${copy.main} }`);
-    }
-
-    const typesPath = getExistPath(cwd, [OUTPUT_TYPES_PATH]);
-
-    if (typesPath) {
-      copy.types = OUTPUT_TYPES_PATH;
-    }
-
-    writeFileSync(
-      join(cwd, 'package.json'),
-      prettier.format(JSON.stringify(sort(copy)), { parser: 'json', printWidth: 1 }),
-      { encoding: 'utf8' },
-    );
-
-    signale.complete('overwrite package.json done.\n\n');
+    return JSON.parse(readFileSync(dir, 'utf-8'));
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error(error);
+    console.warn(`read pakcage error: ${path}.`);
+    return {};
   }
+};
+
+export const getLernaPackages = (cwd: string) => {
+  const dirs = readdirSync(join(cwd, 'packages')).filter(p => !p.startsWith('.'));
+  return dirs
+    .map(dir => {
+      const path = join(cwd, 'packages', dir);
+      const pkg = getPackage(join(path, 'package.json'));
+      return {
+        path,
+        name: pkg.name || '',
+      };
+    })
+    .filter(param => param.name);
 };

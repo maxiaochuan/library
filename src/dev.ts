@@ -1,11 +1,11 @@
-import { join, dirname } from 'path';
+import { join } from 'path';
 import rimraf from 'rimraf';
 // import Debug from 'debug';
 
-import { existsSync, readdirSync, readFileSync } from 'fs';
+import { existsSync } from 'fs';
 import { IBuildOpts, IPackageJSON } from './types';
 import { OUTPUT_DIR } from './const';
-import { getConfig } from './utils';
+import { getConfig, getLernaPackages } from './utils';
 
 import * as rollup from './rollup';
 import * as docz from './docz';
@@ -50,20 +50,19 @@ export const dev = async ({ cwd }: IBuildOpts) => {
 
 export const devForLerna = async (opts: IBuildOpts) => {
   try {
-    const pkgs = readdirSync(join(opts.cwd, 'packages')).filter(p => !p.startsWith('.'));
-    const names = pkgs.reduce<Record<string, string>>((prev, pkg) => {
-      const dir = join(opts.cwd, 'packages', pkg, 'package.json');
-      const { name } = JSON.parse(readFileSync(dir, 'utf-8'));
-      // eslint-disable-next-line no-param-reassign
-      prev[name] = dirname(dir);
-      return prev;
-    }, {});
-
     if (!opts.scope) {
       throw new Error('dev in leran project must scope');
     }
 
+    const params = getLernaPackages(opts.cwd);
+    const names = params.reduce<Record<string, string>>((prev, param) => {
+      // eslint-disable-next-line no-param-reassign
+      prev[param.name] = param.path;
+      return prev;
+    }, {});
+
     if (names[opts.scope]) {
+      process.chdir(names[opts.scope]);
       await dev({
         ...opts,
         cwd: names[opts.scope],

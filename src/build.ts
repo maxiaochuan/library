@@ -1,17 +1,17 @@
 import { join } from 'path';
 import rimraf from 'rimraf';
 import { Signale } from 'signale';
-
-import { readdirSync, existsSync } from 'fs';
-import { IBuildOpts, IPackageJSON } from './types';
-import { getConfig, isFalse, overwritePackageJSON } from './utils';
-
+import { PackageJson } from '@mxcins/types';
+import { existsSync } from 'fs';
+import { IBuildOpts } from './types';
+import { getConfig, isFalse, getPackage, getLernaPackages } from './utils';
+import overwrite from './package';
 import * as rollup from './rollup';
 import declaration from './declaration';
 import { OUTPUT_DIR } from './const';
 
 export const build = async ({ cwd }: IBuildOpts) => {
-  const pkg: IPackageJSON = require(join(cwd, 'package.json'));
+  const pkg: PackageJson = getPackage(cwd);
   const signale = new Signale().scope((pkg.name || '').toUpperCase(), 'BUILD');
   try {
     const conf = getConfig(cwd);
@@ -33,7 +33,7 @@ export const build = async ({ cwd }: IBuildOpts) => {
     }
 
     if (!isFalse(conf.overwritePackageJSON)) {
-      overwritePackageJSON(cwd, pkg, outputs);
+      overwrite(cwd, pkg, outputs);
     }
 
     const isTs = existsSync(join(cwd, 'tsconfig.json'));
@@ -53,16 +53,14 @@ export const build = async ({ cwd }: IBuildOpts) => {
 
 const buildForLerna = async (opts: IBuildOpts) => {
   try {
-    const pkgs = readdirSync(join(opts.cwd, 'packages')).filter(p => !p.startsWith('.'));
+    const params = getLernaPackages(opts.cwd);
     // eslint-disable-next-line no-restricted-syntax
-    for (const pkg of pkgs) {
-      const pkgPath = join(opts.cwd, 'packages', pkg);
-
-      process.chdir(pkgPath);
+    for (const param of params) {
+      process.chdir(param.path);
       // eslint-disable-next-line no-await-in-loop
       await build({
         ...opts,
-        cwd: pkgPath,
+        cwd: param.path,
         // root: cwd,
       });
     }

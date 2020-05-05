@@ -2,7 +2,7 @@ import { Signale } from 'signale';
 import Debug from 'debug';
 import { join } from 'path';
 import { rollup, watch, OutputOptions, RollupOptions } from 'rollup';
-import { IOpts as IbabelPresetMxcinsOpts } from 'babel-preset-mxcins';
+import { IOpts as IBabelPresetMxcinsOpts } from 'babel-preset-mxcins';
 
 // plugins
 // 2020-03-28 15:56:39 UNRESOLVED_IMPORT
@@ -59,14 +59,16 @@ const formatOptions = (opts: IRollupOpts) => {
   // const runtime = conf.runtime && format === 'esm';
   // 2020-04-30 . 还是要得；
   const { runtime } = conf;
-  const targets = format === 'cjs' ? { node: 10 } : { ie: 10 };
+  const targets = format === 'cjs' ? { node: '10' } : { ie: '10' };
+  // 2020-05-03 22:06:05 cjs 情况下无需runtime处理
+  const transformRuntime = format === 'cjs' ? false : runtime;
 
-  const babelPresetOptions: IbabelPresetMxcinsOpts = {
+  const babelPresetOptions: IBabelPresetMxcinsOpts = {
     debug: false,
     env: { targets, corejs: 3, useBuiltIns: 'entry', modules: false },
     react: {},
     typescript: isTs && {},
-    transformRuntime: runtime,
+    transformRuntime,
   };
 
   debug('babel-preset-mxcins options:\n%O', babelPresetOptions);
@@ -79,7 +81,7 @@ const formatOptions = (opts: IRollupOpts) => {
       babel({
         presets: [[require.resolve('babel-preset-mxcins'), babelPresetOptions]],
         plugins: conf.extraBabelPlugins || [],
-        runtimeHelpers: runtime,
+        runtimeHelpers: transformRuntime,
         exclude: /\/node_modules\//,
         babelrc: false,
         extensions: EXTENSIONS,
@@ -116,6 +118,7 @@ const formatOptions = (opts: IRollupOpts) => {
       if (warning.code === 'NON_EXISTENT_EXPORT') {
         return;
       }
+      // eslint-disable-next-line no-console
       console.warn(warning);
     },
 

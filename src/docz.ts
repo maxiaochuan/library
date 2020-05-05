@@ -4,6 +4,21 @@ import mkdirp from 'mkdirp';
 // import rimraf from 'rimraf';
 import { writeFileSync } from 'fs';
 import { IConfig } from './types';
+import { getPackage } from './utils';
+
+const checkDependencies = (cwd: string) => {
+  const pkg = getPackage(cwd);
+
+  if (pkg.dependencies?.docz) {
+    return true;
+  }
+
+  if (pkg.devDependencies?.docz) {
+    return true;
+  }
+
+  throw new Error('install docz@2.3.0 first.');
+};
 
 const createGatsbyCustomConfig = (plugins: string[] = []) => `
 exports.onCreateBabelConfig = ({ actions }) => {
@@ -20,14 +35,12 @@ exports.onCreateBabelConfig = ({ actions }) => {
 `;
 
 export const dev = async ({ cwd, conf }: { cwd: string; conf: IConfig }) => {
-  process.chdir(cwd);
+  checkDependencies(cwd);
   const dir = join(cwd, '.docz');
   // rimraf.sync(dir);
   mkdirp.sync(dir);
 
   const custom = createGatsbyCustomConfig(conf.extraBabelPlugins);
-
-  console.log(custom);
 
   writeFileSync(join(dir, 'gatsby-node.custom.js'), custom, 'utf-8');
 

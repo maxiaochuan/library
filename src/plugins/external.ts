@@ -93,7 +93,7 @@ export default ({ cwd, format = 'esm', pkg, ...others }: IExternalOpts) => ({
     }
 
     // ids = ids.map(id => safe(rr, id)).filter(Boolean) as string[];
-    const exps = ids.map(id => new RegExp(`^${id}/?`));
+    const exps = ids.map(id => new RegExp(`^(${id}/.*|${id}$)`));
 
     const external = (id: string) => {
       if (typeof opts.external === 'function' && opts.external(id)) {

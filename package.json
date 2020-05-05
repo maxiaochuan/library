@@ -39,16 +39,15 @@
   },
   "dependencies": {
     "@babel/register": "7.9.0",
+    "@mxcins/types": "1.7.0",
     "@rollup/plugin-commonjs": "11.0.2",
     "@rollup/plugin-node-resolve": "7.1.1",
     "autoprefixer": "9.7.5",
-    "babel-plugin-import": "^1.13.0",
-    "babel-preset-mxcins": "0.0.1-alpha.5",
+    "babel-plugin-import": "1.13.0",
+    "babel-preset-mxcins": "0.3.0",
     "debug": "4.1.1",
-    "docz": "2.3.0",
     "less": "3.11.1",
     "mkdirp": "1.0.3",
-    "prettier": "2.0.2",
     "rimraf": "3.0.2",
     "rollup": "2.2.0",
     "rollup-plugin-babel": "4.4.0",
@@ -67,6 +66,9 @@
     "lint-staged": "10.0.8",
     "np": "6.2.0",
     "typescript": "3.8.3"
+  },
+  "peerDependencies": {
+    "docz": "2.3.0"
   },
   "publishConfig": {
     "access": "public"
