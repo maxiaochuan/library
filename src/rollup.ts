@@ -1,6 +1,6 @@
 import { Signale } from 'signale';
 import Debug from 'debug';
-import { join } from 'path';
+import { join, dirname } from 'path';
 import { rollup, watch, OutputOptions, RollupOptions } from 'rollup';
 import { IOpts as IBabelPresetMxcinsOpts } from 'babel-preset-mxcins';
 
@@ -13,6 +13,8 @@ import babel from 'rollup-plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 // 2020-04-03 17:18:33 for css
 import postcss from 'rollup-plugin-postcss';
+// 2020-05-06 11:45:13 alias
+import alias from '@rollup/plugin-alias';
 import autoprefixer from 'autoprefixer';
 
 import { IPackageJSON, IConfig, IUMD } from './types';
@@ -109,6 +111,20 @@ const formatOptions = (opts: IRollupOpts) => {
       }),
       // UMD
       format === 'umd' && commonjs({ include: /node_modules/ }),
+      // 2020-05-06 11:43:03 如果在打包UMD文件时， 如果没有依赖回在external中卡死,
+      format === 'umd' &&
+        alias({
+          entries: [
+            {
+              find: '@babel/runtime',
+              replacement: dirname(require.resolve('@babel/runtime/package.json')),
+            },
+            {
+              find: '@babel/runtime-corejs3',
+              replacement: dirname(require.resolve('@babel/runtime-corejs3/package.json')),
+            },
+          ],
+        }),
     ],
 
     onwarn(warning: any) {

@@ -1,4 +1,3 @@
-declare module '@rollup/plugin-alias';
 declare module 'rollup-plugin-babel';
 declare module 'rollup-plugin-postcss';
 declare module 'path-is-root';
