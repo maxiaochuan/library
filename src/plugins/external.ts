@@ -6,19 +6,11 @@ import { IPackageJSON } from '../types';
 
 const debug = Debug('mlib:plugins:external');
 
-// const safe = (rr: NodeRequire, id: string) => {
-//   try {
-//     return rr.resolve(id);
-//   } catch (e) {
-//     debug('safe error:', id);
-//     return null;
-//   }
-// };
-
 export interface IExternalOpts extends IOptsByFormat {
   cwd: string;
   format: ModuleFormat;
   pkg: IPackageJSON;
+  globals: Record<string, string>;
 }
 
 interface IOptsByFormat {
@@ -54,7 +46,7 @@ export const DEFAULT_OPTIONS: Record<string, IOptsByFormat> = {
 };
 
 // 2020-04-14 14:28:29 resolve 方案问题好多， 使用正则
-export default ({ cwd, format = 'esm', pkg, ...others }: IExternalOpts) => ({
+export default ({ cwd, format = 'esm', pkg, globals, ...others }: IExternalOpts) => ({
   name: 'mlib-external',
   options: (opts: any) => {
     const { builtins, dependencies, devDependencies, peerDependencies, runtime } = {
@@ -90,6 +82,10 @@ export default ({ cwd, format = 'esm', pkg, ...others }: IExternalOpts) => ({
     if (runtime) {
       // ids = ids.concat(['@babel/runtime-corejs3/package.json', '@babel/runtime/package.json']);
       ids = ids.concat(['@babel/runtime-corejs3', '@babel/runtime']);
+    }
+
+    if (globals) {
+      ids = ids.concat(Object.keys(globals) || []);
     }
 
     // ids = ids.map(id => safe(rr, id)).filter(Boolean) as string[];

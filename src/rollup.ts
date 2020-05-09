@@ -79,6 +79,12 @@ const formatOptions = (opts: IRollupOpts) => {
     input,
     external: conf.external,
     plugins: [
+      external({
+        cwd: opts.cwd,
+        format: opts.format,
+        pkg: opts.pkg,
+        globals: (params as IUMD).globals || {},
+      }),
       // 2020-04-14 13:56:38 去掉typescript的转换 其实需要的是declaration文件而不是转换
       babel({
         presets: [[require.resolve('babel-preset-mxcins'), babelPresetOptions]],
@@ -91,11 +97,6 @@ const formatOptions = (opts: IRollupOpts) => {
       nodeResolve({
         preferBuiltins: true, // https://github.com/rollup/plugins/tree/master/packages/node-resolve/#preferbuiltins
         extensions: EXTENSIONS,
-      }),
-      external({
-        cwd: opts.cwd,
-        format: opts.format,
-        pkg: opts.pkg,
       }),
       postcss({
         extract: true,

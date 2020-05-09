@@ -52,7 +52,7 @@
     "less": "3.11.1",
     "mkdirp": "1.0.3",
     "rimraf": "3.0.2",
-    "rollup": "2.2.0",
+    "rollup": "2.8.2",
     "rollup-plugin-babel": "4.4.0",
     "rollup-plugin-postcss": "2.5.0",
     "signale": "1.4.0",
