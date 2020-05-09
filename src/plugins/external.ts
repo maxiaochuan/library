@@ -79,17 +79,16 @@ export default ({ cwd, format = 'esm', pkg, globals, ...others }: IExternalOpts)
       ids = ids.concat(Object.keys(pkg.peerDependencies));
     }
 
-    if (runtime) {
-      // ids = ids.concat(['@babel/runtime-corejs3/package.json', '@babel/runtime/package.json']);
-      ids = ids.concat(['@babel/runtime-corejs3', '@babel/runtime']);
-    }
-
     if (globals) {
       ids = ids.concat(Object.keys(globals) || []);
     }
 
     // ids = ids.map(id => safe(rr, id)).filter(Boolean) as string[];
-    const exps = ids.map(id => new RegExp(`^(${id}/.*|${id}$)`));
+    let exps = ids.map(id => new RegExp(`^${id}$`));
+
+    if (runtime) {
+      exps = exps.concat([/^@babel\/runtime-corejs3\/.*/, /^@babel\/runtime\/.*/]);
+    }
 
     const external = (id: string) => {
       if (typeof opts.external === 'function' && opts.external(id)) {
