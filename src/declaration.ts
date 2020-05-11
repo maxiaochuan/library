@@ -10,7 +10,13 @@ export default async ({ pkg, watch }: { pkg: IPackageJSON; watch?: boolean }) =>
   return new Promise((resolve, reject) => {
     const bin = require.resolve('typescript/bin/tsc');
 
-    const params = ['--declaration', '--outDir', 'dist', '--emitDeclarationOnly'];
+    const params = [
+      '--outDir',
+      'dist',
+      '--declaration',
+      '--emitDeclarationOnly',
+      '--preserveWatchOutput',
+    ];
 
     if (watch) {
       params.push('--watch');
@@ -18,15 +24,9 @@ export default async ({ pkg, watch }: { pkg: IPackageJSON; watch?: boolean }) =>
 
     const child = fork(bin, params);
 
-    if (child.stdout) {
-      child.stdout.on('data', data => {
-        process.stdout.write(data);
-      });
-    }
-
     child.on('exit', code => {
       if (code === 1) {
-        reject(new Error('docz error'));
+        reject(new Error('declaration error'));
       } else {
         signale.complete(`declaration -> finish   ${Date.now() - start}ms.\r\n\r\n`);
         resolve();

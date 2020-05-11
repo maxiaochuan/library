@@ -23,7 +23,7 @@ export const dev = async ({ cwd }: IBuildOpts) => {
   try {
     const isTs = existsSync(join(cwd, 'tsconfig.json'));
     if (mode !== 'docz' && isTs) {
-      await declaration({ pkg });
+      declaration({ pkg, watch: true });
     }
     if (mode === 'esm') {
       return rollup.dev({ cwd, pkg, format: 'esm', conf });
