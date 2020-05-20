@@ -997,10 +997,10 @@
     stylelint-declaration-block-no-ignored-properties "2.3.0"
     stylelint-order "3.0.1"
 
-"@mxcins/types@1.7.0":
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/@mxcins/types/-/types-1.7.0.tgz#25e800889ff74bac03425b9d84c49712853add56"
-  integrity sha512-ADcoj55CVXoZ2W/LDsP7Q3ymdx/fQ0DOqEXpSXCwj0xTL/rC2op8ojhD0+2udvjTpn3QBzFysuQJaARjU8bcog==
+"@mxcins/types@1.7.1":
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/@mxcins/types/-/types-1.7.1.tgz#8e1458b0405463bc64cc05f2282ccbc7bbd7826e"
+  integrity sha512-F7jCQqubcuMZKRpL6UtR7SdEKKwoCRrsaUH9AwqP7zA2+0ucaKiWiN+W9YepL/xsYqqCzsB6tixmK55AJN9DTA==
   dependencies:
     "@types/history" "4.7.3"
     type-fest "0.13.1"

@@ -41,7 +41,7 @@
     "@babel/register": "7.9.0",
     "@babel/runtime": "7.9.6",
     "@babel/runtime-corejs3": "7.9.6",
-    "@mxcins/types": "1.7.0",
+    "@mxcins/types": "1.7.1",
     "@rollup/plugin-alias": "^3.1.0",
     "@rollup/plugin-commonjs": "11.0.2",
     "@rollup/plugin-node-resolve": "7.1.1",
