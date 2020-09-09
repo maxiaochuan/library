@@ -11,7 +11,7 @@
     "url": "https://github.com/maxiaochuan/mxcins-library"
   },
   "license": "MIT",
-  "types": "src/types.d.ts",
+  "types": "lib/types.d.ts",
   "bin": {
     "mlib": "./bin/mlib.js"
   },
