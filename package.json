@@ -47,7 +47,7 @@
     "@rollup/plugin-node-resolve": "7.1.1",
     "autoprefixer": "9.7.5",
     "babel-plugin-import": "1.13.0",
-    "babel-preset-mxcins": "0.3.0",
+    "babel-preset-mxcins": "0.4.0-alpha.1",
     "debug": "4.1.1",
     "less": "3.11.1",
     "mkdirp": "1.0.3",

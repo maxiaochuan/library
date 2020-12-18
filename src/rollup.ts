@@ -2,7 +2,7 @@ import { Signale } from 'signale';
 import Debug from 'debug';
 import { join, dirname } from 'path';
 import { rollup, watch, OutputOptions, RollupOptions } from 'rollup';
-import { IOpts as IBabelPresetMxcinsOpts } from 'babel-preset-mxcins';
+import { PresetOpts } from 'babel-preset-mxcins';
 
 // plugins
 // 2020-03-28 15:56:39 UNRESOLVED_IMPORT
@@ -65,13 +65,15 @@ const formatOptions = (opts: IRollupOpts) => {
   const targets = format === 'cjs' ? { node: '10' } : { ie: '10' };
   // 2020-05-03 22:06:05 cjs 情况下无需runtime处理
   const transformRuntime = format === 'cjs' ? false : runtime;
+  const styledComponents = format === 'cjs' ? { ssr: true } : {};
 
-  const babelPresetOptions: IBabelPresetMxcinsOpts = {
+  const babelPresetOptions: PresetOpts = {
     debug: false,
     env: { targets, corejs: 3, useBuiltIns: 'entry', modules: false },
     react: {},
     typescript: isTs && {},
     transformRuntime,
+    styledComponents,
   };
 
   debug('babel-preset-mxcins options:\n%O', babelPresetOptions);
