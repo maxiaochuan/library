@@ -47,7 +47,7 @@ export const getConfig = (cwd: string) => {
   require('@babel/register')({
     presets: [
       [
-        require.resolve('babel-preset-mxcins'),
+        require.resolve('./babel'),
         {
           debug: false,
           env: { targets: { node: 10 }, modules: 'auto' },
