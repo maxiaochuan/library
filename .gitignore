@@ -66,3 +66,5 @@ es/
 .DS_Store
 
 *.swp
+
+yarn.lock

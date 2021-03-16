@@ -2,7 +2,6 @@ import { Signale } from 'signale';
 import Debug from 'debug';
 import { join, dirname } from 'path';
 import { rollup, watch, OutputOptions, RollupOptions } from 'rollup';
-import { PresetOpts } from 'babel-preset-mxcins';
 
 // plugins
 // 2020-03-28 15:56:39 UNRESOLVED_IMPORT
@@ -17,6 +16,7 @@ import postcss from 'rollup-plugin-postcss';
 import alias from '@rollup/plugin-alias';
 import autoprefixer from 'autoprefixer';
 
+import { PresetOpts } from './babel';
 import { IPackageJSON, IConfig, IUMD } from './types';
 import { DEFAULT_ROLLUP_ENTRY_FILES, OUTPUT_DIR, EXTENSIONS } from './const';
 import { getEntryPath, getExistPath } from './utils';
@@ -84,7 +84,7 @@ const formatOptions = (opts: IRollupOpts) => {
     plugins: [
       // 2020-04-14 13:56:38 去掉typescript的转换 其实需要的是declaration文件而不是转换
       babel({
-        presets: [[require.resolve('babel-preset-mxcins'), babelPresetOptions]],
+        presets: [[require.resolve('./babel'), babelPresetOptions]],
         plugins: conf.extraBabelPlugins || [],
         runtimeHelpers: transformRuntime,
         exclude: /\/node_modules\//,
