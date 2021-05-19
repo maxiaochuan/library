@@ -16,6 +16,9 @@ import postcss from 'rollup-plugin-postcss';
 import alias from '@rollup/plugin-alias';
 import autoprefixer from 'autoprefixer';
 
+// 2021-05-19 18:31:37 svgr
+import svgr from '@svgr/rollup';
+
 import { PresetOpts } from './babel';
 import { IPackageJSON, IConfig, IUMD } from './types';
 import { DEFAULT_ROLLUP_ENTRY_FILES, OUTPUT_DIR, EXTENSIONS } from './const';
@@ -130,6 +133,7 @@ const formatOptions = (opts: IRollupOpts) => {
         globals: (params as IUMD).globals || {},
       }),
       saferesolve(),
+      svgr(),
     ],
 
     onwarn(warning: any) {

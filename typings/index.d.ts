@@ -5,3 +5,4 @@ declare module 'rimraf';
 declare module 'mkdirp';
 declare module 'builtins';
 declare module 'autoprefixer';
+declare module '@svgr/rollup';
