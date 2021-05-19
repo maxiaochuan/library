@@ -91,5 +91,8 @@
   },
   "authors": [
     "XiaochuanMa <mxcins@gmail.com> (https://github.com/maxiaochuan)"
-  ]
+  ],
+  "np": {
+    "yarn": false
+  }
 }
