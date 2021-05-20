@@ -1,6 +1,6 @@
 {
   "name": "@mxcins/library",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "description": "library",
   "homepage": "https://github.com/maxiaochuan/mxcins-library",
   "bugs": {
@@ -13,7 +13,7 @@
   "license": "MIT",
   "types": "lib/types.d.ts",
   "bin": {
-    "mlib": "./bin/mlib.js"
+    "mlib": "bin/mlib.js"
   },
   "files": [
     "lib",
