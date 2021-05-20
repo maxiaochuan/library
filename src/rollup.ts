@@ -18,6 +18,8 @@ import autoprefixer from 'autoprefixer';
 
 // 2021-05-19 18:31:37 svgr
 import svgr from '@svgr/rollup';
+// 2021-05-20 21:59:24 url
+import url from 'rollup-plugin-url';
 
 import { PresetOpts } from './babel';
 import { IPackageJSON, IConfig, IUMD } from './types';
@@ -133,6 +135,7 @@ const formatOptions = (opts: IRollupOpts) => {
         globals: (params as IUMD).globals || {},
       }),
       saferesolve(),
+      url(),
       svgr(),
     ],
 
