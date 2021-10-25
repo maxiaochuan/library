@@ -75,7 +75,8 @@ const formatOptions = (opts: IRollupOpts) => {
   const babelPresetOptions: PresetOpts = {
     debug: false,
     env: { targets, corejs: 3, useBuiltIns: 'entry', modules: false },
-    react: {},
+    // 2021-10-25 20:02:01 support react 17
+    react: { runtime: conf.react?.[17] ? 'automatic' : 'classic' },
     typescript: isTs && {},
     transformRuntime,
     styledComponents,

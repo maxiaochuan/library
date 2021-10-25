@@ -36,6 +36,8 @@ export interface IConfig {
   outputFileName?: string;
   outputExports?: IOutputExports;
 
+  react?: { 17: boolean };
+
   overwritePackageJSON?: boolean;
 
   dev?: 'esm' | 'cjs' | 'umd' | 'docz';
