@@ -1,6 +1,5 @@
 import Debug from 'debug';
 import { builtinModules } from 'module';
-// import { dirname, join } from 'path';
 import { ModuleFormat } from 'rollup';
 import { IPackageJSON } from '../types';
 
@@ -11,6 +10,7 @@ export interface IExternalOpts extends IOptsByFormat {
   format: ModuleFormat;
   pkg: IPackageJSON;
   globals: Record<string, string>;
+  react17: boolean;
 }
 
 interface IOptsByFormat {
@@ -46,7 +46,7 @@ export const DEFAULT_OPTIONS: Record<string, IOptsByFormat> = {
 };
 
 // 2020-04-14 14:28:29 resolve 方案问题好多， 使用正则
-export default ({ cwd, format = 'esm', pkg, globals, ...others }: IExternalOpts) => ({
+export default ({ cwd, format = 'esm', pkg, globals, react17, ...others }: IExternalOpts) => ({
   name: 'mlib-external',
   options: (opts: any) => {
     const { builtins, dependencies, devDependencies, peerDependencies, runtime } = {
@@ -99,8 +99,11 @@ export default ({ cwd, format = 'esm', pkg, globals, ...others }: IExternalOpts)
         return true;
       }
 
+      if (react17 && ['react/jsx-runtime'].includes(id)) {
+        return true;
+      }
+
       const ret = exps.some(exp => exp.test(id));
-      // const ret = ids.some(idx => resolvedDirname.startsWith(dirname(idx)));
 
       debug('external: %s\n  id: %s\n', ret, id);
 

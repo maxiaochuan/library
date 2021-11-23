@@ -134,6 +134,7 @@ const formatOptions = (opts: IRollupOpts) => {
         format: opts.format,
         pkg: opts.pkg,
         globals: (params as IUMD).globals || {},
+        react17: !!conf.react?.[17],
       }),
       saferesolve(),
       url(),
